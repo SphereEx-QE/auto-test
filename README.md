@@ -21,21 +21,19 @@ cd auto-test-1.0-SNAPSHOT
 
 //output
 
-usage: auto-test.sh [ip] [port] [dbname] [user] [password] [feature] [tag] [casename]
+usage: auto-test.sh [ip] [port] [dbname] [user] [password] [casename]
   ip: shardingsphere proxy ip, not null
   port: shardingsphere proxy port, not null
   dbname: shardingsphere proxy dbname, not null
   user: shardingsphere proxy user, not null
   password: shardingsphere proxy password, not null
-  feature: cases in the feature will run
-  tag: must define feature, cases with the tag will run
-  casename: must define feature and tag, the case will run
+  casename: separate case names with commas
 ```
 
 ### How to add case
 
 * create a class extend `BaseCaseImpl` in package `come.sphereex.cases`
-* add annotation `AutoTest` to class, please refer to `src/main/java/com/sphereex/cases/transaction/Case1.java`
+* add annotation `AutoTest` to class, please refer to `src/main/java/com/sphereex/cases/transaction/case1/Case1.java`
 
 ### Realization principle
 
