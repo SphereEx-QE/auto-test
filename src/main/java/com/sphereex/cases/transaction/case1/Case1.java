@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction;
+package com.sphereex.cases.transaction.case1;
 
 import com.sphereex.cases.BaseCaseImpl;
 import com.sphereex.core.AutoTest;

@@ -6,8 +6,6 @@ import com.sphereex.core.DBInfo;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.SQLException;
-
 @Setter
 @Getter
 public abstract class BaseCaseImpl implements Case {
@@ -16,14 +14,14 @@ public abstract class BaseCaseImpl implements Case {
 
     private DBInfo dbInfo;
 
-    public abstract void pre() throws ClassNotFoundException, SQLException;
+    public void pre() throws Exception{}
 
-    public abstract void run() throws SQLException;
+    public void run() throws Exception {}
 
-    public abstract void end() throws SQLException, ClassNotFoundException;
+    public void end() throws Exception{}
 
     @Override
-    public void start() throws SQLException, ClassNotFoundException {
+    public void start() throws Exception {
         pre();
         run();
         end();

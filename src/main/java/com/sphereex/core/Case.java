@@ -1,15 +1,13 @@
 package com.sphereex.core;
 
-import java.sql.SQLException;
-
 public interface Case {
-    void pre() throws ClassNotFoundException, SQLException;
+    void pre() throws Exception;
 
-    void run() throws SQLException;
+    void run() throws Exception;
 
-    void end() throws SQLException, ClassNotFoundException;
+    void end() throws Exception;
 
-    void start() throws SQLException, ClassNotFoundException;
+    void start() throws Exception;
 
     CaseInfo getCaseInfo();
 

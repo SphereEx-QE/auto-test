@@ -11,8 +11,13 @@ import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -21,19 +26,25 @@ public class Bootstrap {
     private static final String packageName = "com.sphereex.cases";
     private static final List<File> files = new ArrayList<>();
     private static final List<Class> cases = new LinkedList<>();
+    private static final List<Case> needRunCases = new LinkedList<>();
+    private static final List<String> needRunCaseNames = new LinkedList<>();
     private static int successNum = 0;
     private static int failedNum = 0;
     private static final DBInfo dbInfo = new DBInfo();
     public static void main(String[] args) throws Exception {
-        parseArgs();
+        parseArgs(args);
         caseScanner();
         filterFiles();
         filterCases();
+        selectRunCases();
         run();
         System.out.printf("failed/success/total: [%d:%d:%d].%n", failedNum, successNum, cases.size());
     }
 
-    private static void parseArgs() {
+    private static void parseArgs(String[] args) {
+        if (args.length == 1) {
+            Collections.addAll(needRunCaseNames, args[0].split(","));
+        }
         String ip = System.getProperty("ip");
         int port = Integer.parseInt(System.getProperty("port"));
         String dbName = System.getProperty("dbname");
@@ -46,11 +57,14 @@ public class Bootstrap {
         dbInfo.setPassword(password);
     }
 
-    static void run() throws InstantiationException, IllegalAccessException, SQLException, ClassNotFoundException {
-        for (Class clazz : cases) {
-            Case c = (Case) clazz.newInstance();
-            c.setDbInfo(dbInfo);
-            c.start();
+    static void run() {
+        for (Case c : needRunCases) {
+            try {
+                c.start();
+            } catch (Exception e) {
+                logger.info(String.format("case %s throw exception", c.getCaseInfo().getName()));
+                e.printStackTrace();
+            }
             if (!c.getCaseInfo().isStatus()) {
                 failedNum += 1;
                 System.out.printf("case: %s, status: %b%n", c.getCaseInfo().getName(), c.getCaseInfo().isStatus());
@@ -77,9 +91,24 @@ public class Bootstrap {
     public static void filterCases() {
         Iterator<Class> iterator = cases.iterator();
         while (iterator.hasNext()) {
-            Class clazz = (Class) iterator.next();
+            Class clazz = iterator.next();
             if (null == clazz.getAnnotation(AutoTest.class)) {
                 iterator.remove();
+            }
+        }
+    }
+
+    public static void selectRunCases() throws Exception {
+        for (Class clazz : cases) {
+            Case c = (Case) clazz.newInstance();
+            if (needRunCaseNames.isEmpty()) {
+                c.setDbInfo(dbInfo);
+                needRunCases.add(c);
+            } else {
+                if (needRunCaseNames.contains(c.getCaseInfo().getName())) {
+                    c.setDbInfo(dbInfo);
+                    needRunCases.add(c);
+                }
             }
         }
     }
