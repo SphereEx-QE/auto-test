@@ -39,6 +39,7 @@ public class Bootstrap {
         selectRunCases();
         run();
         System.out.printf("failed/success/total: [%d:%d:%d].%n", failedNum, successNum, cases.size());
+        System.exit(0);
     }
 
     private static void parseArgs(String[] args) {

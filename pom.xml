@@ -11,6 +11,9 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <narayana.version>5.9.1.Final</narayana.version>
+        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
     </properties>
 
     <dependencies>
@@ -50,6 +53,47 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <version>5.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-core</artifactId>
+            <version>5.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            <version>5.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.jta</groupId>
+            <artifactId>jta</artifactId>
+            <version>${narayana.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.narayana.jts</groupId>
+            <artifactId>narayana-jts-integration</artifactId>
+            <version>${narayana.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-transaction-spi</artifactId>
+            <version>${jboss-transaction-spi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>${jboss-logging.version}</version>
         </dependency>
     </dependencies>
 

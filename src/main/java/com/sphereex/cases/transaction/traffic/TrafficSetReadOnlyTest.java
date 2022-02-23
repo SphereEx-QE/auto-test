@@ -1,10 +1,7 @@
-package com.sphereex.cases.transaction.readonly;
+package com.sphereex.cases.transaction.traffic;
 
-import com.sphereex.cases.BaseCaseImpl;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBInfo;
-import com.sphereex.utils.MySQLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,31 +9,29 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Objects;
 
 @AutoTest
-public class SetReadOnly extends BaseCaseImpl {
-
-    private static final Logger logger = LoggerFactory.getLogger(SetReadOnly.class);
-
-    public SetReadOnly() {
+public class TrafficSetReadOnlyTest extends TrafficBaseTest {
+    
+    private  final Logger logger = LoggerFactory.getLogger(TrafficSetReadOnlyTest.class);
+    
+    public TrafficSetReadOnlyTest() {
         CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("SetReadOnly");
+        caseInfo.setName("TrafficSetReadOnlyTest");
         caseInfo.setFeature("transaction");
-        caseInfo.setTag("MySQL");
+        caseInfo.setTag("Traffic");
         caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a test for set transaction" +
+        caseInfo.setMessage("this is a traffic test for set transaction" +
                 "1. one DB have only one connection" +
                 "2. session A run 'set session transaction read only', close session A" +
                 "3. session B run 'update' successful");
         setCaseInfo(caseInfo);
     }
-
+    
     @Override
     public void pre() throws Exception {
         super.pre();
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = getDataSource().getConnection();
         Statement stmt;
         Statement stmt1;
         Statement stmt2;
@@ -51,17 +46,16 @@ public class SetReadOnly extends BaseCaseImpl {
         stmt2.close();
         conn.close();
     }
-
+    
     @Override
     public void run() throws Exception {
         super.run();
         step1();
         step2();
     }
-
+    
     private void step1() throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = getDataSource().getConnection();
         conn.setReadOnly(true);
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from account;");
@@ -83,7 +77,6 @@ public class SetReadOnly extends BaseCaseImpl {
         try {
             statement2.execute("update account set balance=100 where id=2;");
             throw new Exception("update run success, should failed");
-
         } catch (SQLException e) {
             logger.info("update failed for expect");
         }
@@ -91,10 +84,9 @@ public class SetReadOnly extends BaseCaseImpl {
         statement2.close();
         conn.close();
     }
-
+    
     private void step2() throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = getDataSource().getConnection();
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from account");
         while (rs.next()) {
@@ -124,12 +116,4 @@ public class SetReadOnly extends BaseCaseImpl {
             throw new Exception("update run failed, should success");
         }
     }
-
-    @Override
-    public void end() throws Exception {
-        super.end();
-        getCaseInfo().setStatus(true);
-    }
 }
-
-
