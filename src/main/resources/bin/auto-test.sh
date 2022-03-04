@@ -17,49 +17,54 @@ CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${DEPLOY_DIR}/conf/*
 MAIN_CLASS=com.sphereex.Bootstrap
 
 print_usage() {
-#    echo "usage: auto-test.sh [ip] [port] [dbname] [user] [password] [feature] [tag] [casename]"
-    echo "usage: auto-test.sh [ip] [port] [dbname] [user] [password] [casename]"
-    echo "  ip: shardingsphere proxy ip, not null"
-    echo "  port: shardingsphere proxy port, not null"
-    echo "  dbname: shardingsphere proxy dbname, not null"
-    echo "  user: shardingsphere proxy user, not null"
-    echo "  password: shardingsphere proxy password, not null"
-#    echo "  feature: cases in the feature will run"
-#    echo "  tag: must define feature, cases with the tag will run"
-#    echo "  casename: must define feature and tag, the case will run"
-    echo "  casename: separate case names with commas "
+    echo "usage: auto-test.sh [-h ip] [-P port] [-d dbname] [-u user] [-p password] [-f feature] [-t tag] [-c casename]"
+    echo "  -h|--host  ip: shardingsphere proxy ip"
+    echo "  -P|--port: shardingsphere proxy port"
+    echo "  -d|--dbname: shardingsphere proxy dbname"
+    echo "  -u|--user: shardingsphere proxy user"
+    echo "  -p|--password: shardingsphere proxy password"
+    echo "  -f|--feature: run the cases of the the feature"
+    echo "  -t|--tag: run the cases of the tag"
+    echo "  -c|--casenames: run this cases "
     exit 0
 }
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ $# == 0 ] ; then
+if [ $# == 0 ] ; then
     print_usage
 fi
 
-if [ $# -lt 5 ]; then
-      echo "dbinfo is incomplete"
-      exit 0
-fi
+host=""
+port=""
+db_name=""
+user=""
+password=""
+feature=""
+tag=""
+casename=""
+GETOPT_ARGS=`getopt -o h::P::d::u::p::f::t::c:: --long host::,port::,db_name::,user::,password::,feature::,tag::,casename:: "$@"`
+while [ -n "$1" ]
+do
+        case "$1" in
+                -h|--host) host=$2; shift 2;;
+                -P|--port) port=$2; shift 2;;
+                -d|--db_name) db_name=$2; shift 2;;
+                -u|--user) user=$2; shift 2;;
+                -p|--password) password=$2; shift 2;;
+                -f|--feature) feature=$2; shift 2;;
+                -t|--tag) tag=$2; shift 2;;
+                -c|--casename) casename=$2; shift 2;;
+                --) break ;;
+                *) break ;;
+        esac
+done
 
-JAVA_OPTS=" -Dip=$1 -Dport=$2 -Ddbname=$3 -Duser=$4 -Dpassword=$5"
+JAVA_OPTS=" -Dip=$host -Dport=$port -Ddbname=$db_name -Duser=$user -Dpassword=$password -Dfeature=$feature -Dtag=$tag"
 APP_ARGS=""
-
-#if [ $# == 6 ]; then
-#    JAVA_OPTS= " $JAVA_OPTS -Dfeature=$6"
-#fi
-#
-#if [ $# == 7 ]; then
-#    JAVA_OPTS= " $JAVA_OPTS -Dtag=$7"
-#fi
-
-if [ $# == 6 ]; then
-    APP_ARGS=$6
-#    JAVA_OPTS= " $JAVA_OPTS -Dcasename=$8"
-fi
 
 echo " java_option: $JAVA_OPTS"
 
 echo "The classpath is ${CLASS_PATH}"
 
-nohup java ${JAVA_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} ${APP_ARGS} >> ${STDOUT_FILE} 2>&1 &
+nohup java ${JAVA_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} ${casename} >> ${STDOUT_FILE} 2>&1 &
 sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"

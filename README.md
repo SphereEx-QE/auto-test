@@ -13,7 +13,7 @@ unzip unzip auto-test-1.0-SNAPSHOT-full.zip
 
 cd auto-test-1.0-SNAPSHOT
 
-./bin/auto-test.sh 127.0.0.1 3309 sharding_db root root
+./bin/auto-test.sh -h 127.0.0.1 -P 3309 -d sharding_db -u root -p root
 
 //Help
 
@@ -21,13 +21,15 @@ cd auto-test-1.0-SNAPSHOT
 
 //output
 
-usage: auto-test.sh [ip] [port] [dbname] [user] [password] [casename]
-  ip: shardingsphere proxy ip, not null
-  port: shardingsphere proxy port, not null
-  dbname: shardingsphere proxy dbname, not null
-  user: shardingsphere proxy user, not null
-  password: shardingsphere proxy password, not null
-  casename: separate case names with commas
+usage: auto-test.sh [-h ip] [-P port] [-d dbname] [-u user] [-p password] [-f feature] [-t tag] [-c casename]
+  -h|--host  ip: shardingsphere proxy ip
+  -P|--port: shardingsphere proxy port
+  -d|--dbname: shardingsphere proxy dbname
+  -u|--user: shardingsphere proxy user
+  -p|--password: shardingsphere proxy password
+  -f|--feature: run the cases of the the feature
+  -t|--tag: run the cases of the tag
+  -c|--casenames: run this cases 
 ```
 
 ### How to add case

@@ -26,6 +26,8 @@ public class Bootstrap {
     private static final String packageName = "com.sphereex.cases";
     private static final List<File> files = new ArrayList<>();
     private static final List<Class> cases = new LinkedList<>();
+    private static final List<String> features = new LinkedList<>();
+    private static final List<String> tags = new LinkedList<>();
     private static final List<Case> needRunCases = new LinkedList<>();
     private static final List<String> needRunCaseNames = new LinkedList<>();
     private static int successNum = 0;
@@ -47,15 +49,33 @@ public class Bootstrap {
             Collections.addAll(needRunCaseNames, args[0].split(","));
         }
         String ip = System.getProperty("ip");
-        int port = Integer.parseInt(System.getProperty("port"));
+        String port = System.getProperty("port");
         String dbName = System.getProperty("dbname");
         String user = System.getProperty("user");
         String password = System.getProperty("password");
-        dbInfo.setIp(ip);
-        dbInfo.setPort(port);
-        dbInfo.setDbName(dbName);
-        dbInfo.setUser(user);
-        dbInfo.setPassword(password);
+        String feature = System.getProperty("feature");
+        String tag = System.getProperty("tag");
+        if (null != ip) {
+            dbInfo.setIp(ip);
+        }
+        if (null != port) {
+            dbInfo.setPort(Integer.parseInt(port));
+        }
+        if (null != dbName) {
+            dbInfo.setDbName(dbName);
+        }
+        if (null != user) {
+            dbInfo.setUser(user);
+        }
+        if (null != password) {
+            dbInfo.setPassword(password);
+        }
+        if (null != feature) {
+            Collections.addAll(features, feature.split(","));
+        }
+        if (null != tag) {
+            Collections.addAll(tags, tag.split(","));
+        }
     }
 
     static void run() {
@@ -102,15 +122,26 @@ public class Bootstrap {
     public static void selectRunCases() throws Exception {
         for (Class clazz : cases) {
             Case c = (Case) clazz.newInstance();
-            if (needRunCaseNames.isEmpty()) {
-                c.setDbInfo(dbInfo);
-                needRunCases.add(c);
-            } else {
-                if (needRunCaseNames.contains(c.getCaseInfo().getName())) {
-                    c.setDbInfo(dbInfo);
-                    needRunCases.add(c);
-                }
+            if (!features.isEmpty() && !features.contains(c.getCaseInfo().getFeature())) {
+                continue;
             }
+            if (!tags.isEmpty() && !tags.contains(c.getCaseInfo().getTag())) {
+                continue;
+            }
+            if (!needRunCaseNames.isEmpty() && !needRunCaseNames.contains(c.getCaseInfo().getName())) {
+                continue;
+            }
+            c.setDbInfo(dbInfo);
+            needRunCases.add(c);
+//            if (needRunCaseNames.isEmpty()) {
+//                c.setDbInfo(dbInfo);
+//                needRunCases.add(c);
+//            } else {
+//                if (needRunCaseNames.contains(c.getCaseInfo().getName())) {
+//                    c.setDbInfo(dbInfo);
+//                    needRunCases.add(c);
+//                }
+//            }
         }
     }
 
