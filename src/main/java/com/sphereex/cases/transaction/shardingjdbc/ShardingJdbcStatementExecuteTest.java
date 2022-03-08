@@ -49,8 +49,6 @@ public class ShardingJdbcStatementExecuteTest extends ShardingJdbcBaseTest {
         ShardingSphereConnection conn = (ShardingSphereConnection) getDataSource().getConnection();
         conn.setAutoCommit(false);
         assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
-        Statement statement1 = conn.createStatement();
-        statement1.executeQuery("select * from account;");
         Statement statement2 = conn.createStatement();
         Statement statement3 = conn.createStatement();
         try {
@@ -75,8 +73,6 @@ public class ShardingJdbcStatementExecuteTest extends ShardingJdbcBaseTest {
         ShardingSphereConnection conn = (ShardingSphereConnection) getDataSource().getConnection();
         conn.setAutoCommit(false);
         assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
-        Statement statement1 = conn.createStatement();
-        statement1.executeQuery("select * from account;");
         Statement statement2 = conn.createStatement();
         Statement statement3 = conn.createStatement();
         try {
@@ -97,38 +93,10 @@ public class ShardingJdbcStatementExecuteTest extends ShardingJdbcBaseTest {
         }
     }
     
-    private void executeWithSqlAndColumnIndexes() throws SQLException {
-        ShardingSphereConnection conn = (ShardingSphereConnection) getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
-        Statement statement1 = conn.createStatement();
-        statement1.executeQuery("select * from account;");
-        Statement statement2 = conn.createStatement();
-        Statement statement3 = conn.createStatement();
-        try {
-            statement2.execute("update account set balance=100 where id=1;");
-            statement3.execute("update account1 set balance=100 where id=1;", new int[]{2});
-            throw new SQLException("expect report SQLException, but not report");
-        } catch (SQLException ex) {
-            assertTrue(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
-        }
-        conn.commit();
-        Statement statement4 = conn.createStatement();
-        ResultSet r = statement4.executeQuery("select * from account;");
-        if (r.next()) {
-            int balance = r.getInt("balance");
-            assertTrue(balance == 1);
-        } else {
-            throw new SQLException("expect one recode, but not.");
-        }
-    }
-    
     private void executeWithSqlAndColumnNames() throws SQLException {
         ShardingSphereConnection conn = (ShardingSphereConnection) getDataSource().getConnection();
         conn.setAutoCommit(false);
         assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
-        Statement statement1 = conn.createStatement();
-        statement1.executeQuery("select * from account;");
         Statement statement2 = conn.createStatement();
         Statement statement3 = conn.createStatement();
         try {

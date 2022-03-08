@@ -40,8 +40,6 @@ public class ShardingJdbcStatementExecuteQueryTest extends ShardingJdbcBaseTest 
         ShardingSphereConnection conn = (ShardingSphereConnection) getDataSource().getConnection();
         conn.setAutoCommit(false);
         assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
-        Statement statement1 = conn.createStatement();
-        statement1.executeQuery("select * from account;");
         Statement statement2 = conn.createStatement();
         Statement statement3 = conn.createStatement();
         try {
