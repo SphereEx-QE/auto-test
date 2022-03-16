@@ -5,6 +5,7 @@ import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBInfo;
 import com.sphereex.utils.OpenGaussUtil;
+import org.opengauss.jdbc.PSQLSavepoint;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -59,6 +60,7 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
         super.run();
         case1();
         case2();
+        case3();
     }
     
     private void case1 () throws Exception {
@@ -110,6 +112,39 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
         if (rn != rowNum) {
             throw new Exception(String.format("recode num assert error, expect:%d, actual:%d.", rowNum, rn));
         }
+    }
+    
+    private void case3() throws Exception{
+        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
+        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
+        try {
+            conn.setSavepoint("point");
+            throw new Exception("expect exception, but no exception report");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            if (!"Cannot establish a savepoint in auto-commit mode.".equals(ex.getMessage())) {
+                throw new Exception("expect exception message error");
+
+            }
+        }
+        try {
+            conn.rollback(new PSQLSavepoint("point1"));
+            throw new Exception("expect exception, but no exception report");
+        } catch (Exception ex) {
+            if (!ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks")) {
+                throw new Exception("expect exception message error");
+            }
+        }
+
+        try {
+            conn.releaseSavepoint(new PSQLSavepoint("point1"));
+            throw new Exception("expect exception, but no exception report");
+        } catch (Exception ex) {
+            if (!ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks")) {
+                throw new Exception("expect exception message error");
+            }
+        }
+        conn.close();
     }
     
     @Override
