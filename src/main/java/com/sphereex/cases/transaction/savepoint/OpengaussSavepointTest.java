@@ -33,7 +33,8 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
                 "9. rollback to savepoint point1" +
                 "10. check if row count is 1" +
                 "11. commit the transaction" +
-                "12. check if row count is 1");
+                "12. check if row count is 1" +
+                "13. test for release savepoint");
         setCaseInfo(caseInfo);
     }
     
