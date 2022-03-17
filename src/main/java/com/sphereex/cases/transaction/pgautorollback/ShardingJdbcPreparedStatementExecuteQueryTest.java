@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.shardingjdbc;
+package com.sphereex.cases.transaction.pgautorollback;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
@@ -15,11 +15,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @AutoTest
-public class ShardingJdbcPreparedStatementExecuteUpdateTest extends ShardingJdbcBaseTest {
+public class ShardingJdbcPreparedStatementExecuteQueryTest extends ShardingJdbcBaseTest {
     
-    public ShardingJdbcPreparedStatementExecuteUpdateTest() {
+    public ShardingJdbcPreparedStatementExecuteQueryTest() {
         CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("ShardingJdbcPreparedStatementExecuteUpdateTest");
+        caseInfo.setName("ShardingJdbcPreparedStatementExecuteQueryTest");
         caseInfo.setFeature("transaction");
         caseInfo.setTag("jdbc-pg-og-auto-rollback");
         caseInfo.setStatus(false);
@@ -45,11 +45,11 @@ public class ShardingJdbcPreparedStatementExecuteUpdateTest extends ShardingJdbc
         conn.setAutoCommit(false);
         assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
         Statement statement2 = conn.createStatement();
-        PreparedStatement statement3 = conn.prepareStatement("update account1 set balance=101 where id=?;");
+        PreparedStatement statement3 = conn.prepareStatement("select * from account1 where id=?");
         try {
             statement2.execute("update account set balance=100 where id=1;");
             statement3.setInt(1,1);
-            statement3.executeUpdate();
+            statement3.executeQuery();
             throw new SQLException("expect report SQLException, but not report");
         } catch (SQLException ex) {
             assertTrue(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
@@ -63,6 +63,5 @@ public class ShardingJdbcPreparedStatementExecuteUpdateTest extends ShardingJdbc
         } else {
             throw new SQLException("expect one recode, but not.");
         }
-        conn.close();
     }
 }

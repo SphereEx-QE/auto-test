@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.shardingjdbc;
+package com.sphereex.cases.transaction.pgautorollback;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;

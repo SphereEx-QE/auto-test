@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.shardingjdbc;
+package com.sphereex.cases.transaction.pgautorollback;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
@@ -6,6 +6,7 @@ import com.sphereex.core.CaseInfo;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,11 +15,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @AutoTest
-public class ShardingJdbcStatementExecuteQueryTest extends ShardingJdbcBaseTest {
+public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTest {
     
-    public ShardingJdbcStatementExecuteQueryTest() {
+    public ShardingJdbcPreparedStatementExecuteTest() {
         CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("ShardingJdbcStatementExecuteQueryTest");
+        caseInfo.setName("ShardingJdbcPreparedStatementExecuteTest");
         caseInfo.setFeature("transaction");
         caseInfo.setTag("jdbc-pg-og-auto-rollback");
         caseInfo.setStatus(false);
@@ -44,10 +45,11 @@ public class ShardingJdbcStatementExecuteQueryTest extends ShardingJdbcBaseTest 
         conn.setAutoCommit(false);
         assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
         Statement statement2 = conn.createStatement();
-        Statement statement3 = conn.createStatement();
+        PreparedStatement statement3 = conn.prepareStatement("update account1 set balance=100 where id=?");
         try {
             statement2.execute("update account set balance=100 where id=1;");
-            statement3.executeQuery("select * from account1;");
+            statement3.setInt(1,1);
+            statement3.execute();
             throw new SQLException("expect report SQLException, but not report");
         } catch (SQLException ex) {
             assertTrue(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
