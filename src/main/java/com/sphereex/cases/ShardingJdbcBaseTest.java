@@ -20,10 +20,10 @@ public class ShardingJdbcBaseTest extends BaseCaseImpl {
     @Override
     public void pre() throws Exception {
         try {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/JdbcOpengaussBase/config-sharding.yaml").getFile()));
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/conf/JdbcOpengaussBase/config-sharding.yaml").getFile()));
         } catch (IOException exception) {
-            logger.error("/JdbcOpengaussBase/config-sharding.yaml not exist.");
-            throw new Exception("/JdbcOpengaussBase/config-sharding.yaml not exist.");
+            logger.error("/conf/JdbcOpengaussBase/config-sharding.yaml not exist.");
+            throw new Exception("/conf/JdbcOpengaussBase/config-sharding.yaml not exist.");
         }
     }
     

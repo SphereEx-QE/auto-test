@@ -17,7 +17,7 @@ public class JdbcTest extends TrafficBaseTest{
         CaseInfo caseInfo = new CaseInfo();
         caseInfo.setName("JdbcTest");
         caseInfo.setFeature("transaction");
-        caseInfo.setTag("Traffic");
+        caseInfo.setTag("conf/Traffic");
         caseInfo.setStatus(false);
         setCaseInfo(caseInfo);
     }

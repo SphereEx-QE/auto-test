@@ -57,11 +57,30 @@ do
                 *) break ;;
         esac
 done
+JAVA_OPTS=""
+if [ "$host" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Dip=${host}"
+fi
+if [ "$port" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Dport=${port}"
+fi
+if [ "$db_name" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Ddbname=${db_name}"
+fi
+if [ "$user" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Duser=${user}"
+fi
+if [ "$password" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Dpassword=${password}"
+fi
+if [ "$feature" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Dfeature=${feature}"
+fi
+if [ "$tag" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Dtag=${tag}"
+fi
 
-JAVA_OPTS=" -Dip=$host -Dport=$port -Ddbname=$db_name -Duser=$user -Dpassword=$password -Dfeature=$feature -Dtag=$tag"
-APP_ARGS=""
-
-echo " java_option: $JAVA_OPTS"
+echo " java_option: ${JAVA_OPTS}"
 
 echo "The classpath is ${CLASS_PATH}"
 

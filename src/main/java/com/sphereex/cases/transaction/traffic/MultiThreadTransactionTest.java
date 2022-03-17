@@ -27,7 +27,7 @@ public class MultiThreadTransactionTest extends TrafficBaseTest {
         CaseInfo caseInfo = new CaseInfo();
         caseInfo.setName("MultiThreadTransactionTest");
         caseInfo.setFeature("transaction");
-        caseInfo.setTag("Traffic");
+        caseInfo.setTag("conf/Traffic");
         caseInfo.setStatus(false);
         caseInfo.setMessage("Connection in transaction should be traffic to proxy.");
         setCaseInfo(caseInfo);

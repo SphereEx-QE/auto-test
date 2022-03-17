@@ -12,18 +12,12 @@
     </dependencySets>
     <fileSets>
         <fileSet>
-            <directory>src/main/resources</directory>
+            <directory>src/main/resources/conf</directory>
             <outputDirectory>conf</outputDirectory>
-            <includes>
-                <include>*.xml</include>
-            </includes>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>bin/*.sh</include>
-            </includes>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
             <fileMode>0777</fileMode>
         </fileSet>
     </fileSets>
