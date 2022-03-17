@@ -20,7 +20,7 @@ public class ShardingJdbcStatementExecuteQueryTest extends ShardingJdbcBaseTest 
         CaseInfo caseInfo = new CaseInfo();
         caseInfo.setName("ShardingJdbcStatementExecuteQueryTest");
         caseInfo.setFeature("transaction");
-        caseInfo.setTag("jdbc");
+        caseInfo.setTag("jdbc-pg-og-auto-rollback");
         caseInfo.setStatus(false);
         setCaseInfo(caseInfo);
     }
@@ -29,8 +29,11 @@ public class ShardingJdbcStatementExecuteQueryTest extends ShardingJdbcBaseTest 
     public void pre() throws Exception {
         super.pre();
         Connection conn = getDataSource().getConnection();
+        Statement dropTable = conn.createStatement();
+        dropTable.execute("drop table if exists account;");
+        Statement createTable = conn.createStatement();
+        createTable.execute("create table account(id int, balance float ,transaction_id int);");
         Statement statement = conn.createStatement();
-        statement.execute("delete from account;");
         statement.execute("insert into account(id, balance, transaction_id) values(1,1,1);");
         conn.close();
     }
