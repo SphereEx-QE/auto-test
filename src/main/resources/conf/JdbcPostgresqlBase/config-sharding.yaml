@@ -1,0 +1,55 @@
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://127.0.0.1:25432/test?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: postgres
+    password: 12345678
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://127.0.0.1:25433/test?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: postgres
+    password: 12345678
+
+rules:
+  - !SHARDING
+    defaultDatabaseStrategy:
+      none: null
+    defaultTableStrategy:
+      none: null
+    shardingAlgorithms:
+      ds_count_inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds_${id % 2}
+      t_account_inline:
+        type: INLINE
+        props:
+          algorithm-expression: account_${transaction_id % 2}
+    tables:
+      account:
+        actualDataNodes: ds_${0..1}.account_${0..1}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_count_inline
+            shardingColumn: id
+        tableStrategy:
+          standard:
+            shardingColumn: transaction_id
+            shardingAlgorithmName: t_account_inline
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 123
+
+  - !TRANSACTION
+    defaultType: XA
+    providerType: Narayana
+
+props:
+  sql-show: false

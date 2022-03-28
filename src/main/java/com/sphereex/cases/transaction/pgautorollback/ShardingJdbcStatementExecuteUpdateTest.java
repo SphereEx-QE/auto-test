@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class ShardingJdbcStatementExecuteUpdateTest extends ShardingJdbcBaseTest {
     
     public ShardingJdbcStatementExecuteUpdateTest() {
+        super("opengauss");
         CaseInfo caseInfo = new CaseInfo();
         caseInfo.setName("ShardingJdbcStatementExecuteUpdateTest");
         caseInfo.setFeature("transaction");
