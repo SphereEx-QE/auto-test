@@ -16,32 +16,8 @@ import java.util.Objects;
 @AutoTest
 public class OpengaussSavepointTest extends BaseCaseImpl {
     
-    public OpengaussSavepointTest() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("OpengaussSavepointTest");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("opengauss-savepoint");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a test for savepoint" +
-                "1. create a session" +
-                "2. begin a transaction" +
-                "3. check if row count is 0" +
-                "4. insert one row (1,1,1)" +
-                "5. savepoint point1" +
-                "6. check if row count is 1" +
-                "7. insert one row (2,2,2)" +
-                "8. check if row count is 2" +
-                "9. rollback to savepoint point1" +
-                "10. check if row count is 1" +
-                "11. commit the transaction" +
-                "12. check if row count is 1" +
-                "13. test for release savepoint");
-        setCaseInfo(caseInfo);
-    }
-    
     @Override
     public void pre() throws Exception {
-        super.pre();
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
         Statement stmt;
@@ -57,7 +33,6 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
     
     @Override
     public void run() throws Exception {
-        super.run();
         case1();
         case2();
         case3();
@@ -148,8 +123,25 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
     }
     
     @Override
-    public void end() throws Exception {
-        super.end();
-        getCaseInfo().setStatus(true);
+    public void initCaseInfo() {
+        String name = "OpengaussSavepointTest";
+        String feature = "transaction";
+        String tag = "opengauss-savepoint";
+        String message = "this is a test for savepoint" +
+                "1. create a session" +
+                "2. begin a transaction" +
+                "3. check if row count is 0" +
+                "4. insert one row (1,1,1)" +
+                "5. savepoint point1" +
+                "6. check if row count is 1" +
+                "7. insert one row (2,2,2)" +
+                "8. check if row count is 2" +
+                "9. rollback to savepoint point1" +
+                "10. check if row count is 1" +
+                "11. commit the transaction" +
+                "12. check if row count is 1" +
+                "13. test for release savepoint";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }

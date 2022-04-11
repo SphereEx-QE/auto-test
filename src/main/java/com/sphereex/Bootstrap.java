@@ -32,7 +32,7 @@ public class Bootstrap {
     private static final List<String> needRunCaseNames = new LinkedList<>();
     private static int successNum = 0;
     private static int failedNum = 0;
-    private static final DBInfo dbInfo = new DBInfo();
+    private static DBInfo dbInfo;
     public static void main(String[] args) throws Exception {
         parseArgs(args);
         caseScanner();
@@ -55,20 +55,8 @@ public class Bootstrap {
         String password = System.getProperty("password");
         String feature = System.getProperty("feature");
         String tag = System.getProperty("tag");
-        if (null != ip) {
-            dbInfo.setIp(ip);
-        }
-        if (null != port) {
-            dbInfo.setPort(Integer.parseInt(port));
-        }
-        if (null != dbName) {
-            dbInfo.setDbName(dbName);
-        }
-        if (null != user) {
-            dbInfo.setUser(user);
-        }
-        if (null != password) {
-            dbInfo.setPassword(password);
+        if (null != ip && null != port && null != dbName && null != user && null != password) {
+            dbInfo = new DBInfo(ip, Integer.parseInt(port), user, password, dbName);
         }
         if (null != feature) {
             Collections.addAll(features, feature.split(","));
@@ -132,16 +120,12 @@ public class Bootstrap {
                 continue;
             }
             c.setDbInfo(dbInfo);
+            c.initCaseInfo();
+            if (c.caseInfoIsNull()) {
+                logger.warn(String.format("Case: %s caseInfo is null", clazz.getName()));
+                continue;
+            }
             needRunCases.add(c);
-//            if (needRunCaseNames.isEmpty()) {
-//                c.setDbInfo(dbInfo);
-//                needRunCases.add(c);
-//            } else {
-//                if (needRunCaseNames.contains(c.getCaseInfo().getName())) {
-//                    c.setDbInfo(dbInfo);
-//                    needRunCases.add(c);
-//                }
-//            }
         }
     }
 

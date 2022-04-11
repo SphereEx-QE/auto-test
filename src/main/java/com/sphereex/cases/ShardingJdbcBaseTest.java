@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class ShardingJdbcBaseTest extends BaseCaseImpl {
+public abstract class ShardingJdbcBaseTest extends BaseCaseImpl {
     
     private final Logger logger = LoggerFactory.getLogger(ShardingJdbcBaseTest.class);
     

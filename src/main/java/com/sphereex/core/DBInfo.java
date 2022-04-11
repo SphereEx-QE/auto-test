@@ -1,19 +1,19 @@
 package com.sphereex.core;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Setter
+@RequiredArgsConstructor
 public class DBInfo {
 
-    private String ip;
+    private final String ip;
 
-    private int port;
+    private final int port;
 
-    private String user;
+    private final String user;
 
-    private String password;
+    private final String password;
 
-    private String dbName;
+    private final String dbName;
 }

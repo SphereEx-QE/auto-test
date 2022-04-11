@@ -13,17 +13,20 @@ public abstract class BaseCaseImpl implements Case {
     private CaseInfo caseInfo;
 
     private DBInfo dbInfo;
-
-    public void pre() throws Exception{}
-
-    public void run() throws Exception {}
-
-    public void end() throws Exception{}
+  
+    public void end() throws Exception{
+        caseInfo.setStatus(true);
+    }
 
     @Override
     public void start() throws Exception {
         pre();
         run();
         end();
+    }
+    
+    @Override
+    public boolean caseInfoIsNull() {
+        return null == caseInfo;
     }
 }

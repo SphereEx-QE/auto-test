@@ -19,12 +19,6 @@ public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTe
     
     public ShardingJdbcPreparedStatementExecuteTest() {
         super("opengauss");
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("ShardingJdbcPreparedStatementExecuteTest");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("jdbc-pg-og-auto-rollback");
-        caseInfo.setStatus(false);
-        setCaseInfo(caseInfo);
     }
     
     @Override
@@ -64,5 +58,15 @@ public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTe
         } else {
             throw new SQLException("expect one recode, but not.");
         }
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "ShardingJdbcPreparedStatementExecuteTest";
+        String feature = "transaction";
+        String tag = "jdbc-pg-og-auto-rollback";
+        String message = "";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }

@@ -15,19 +15,6 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
     
     private  final Logger logger = LoggerFactory.getLogger(TrafficSetReadOnlyTest.class);
     
-    public TrafficSetReadOnlyTest() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("TrafficSetReadOnlyTest");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("Traffic-opengauss");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a traffic test for set transaction" +
-                "1. one DB have only one connection" +
-                "2. session A run 'set session transaction read only', close session A" +
-                "3. session B run 'update' successful");
-        setCaseInfo(caseInfo);
-    }
-    
     @Override
     public void pre() throws Exception {
         super.pre();
@@ -45,7 +32,6 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
     
     @Override
     public void run() throws Exception {
-        super.run();
         step1();
         step2();
     }
@@ -120,6 +106,19 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
         statement.executeUpdate("delete from t_order;");
         statement.close();
         conn.close();
-        super.end();
+        getCaseInfo().setStatus(true);
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "TrafficSetReadOnlyTest";
+        String feature = "transaction";
+        String tag = "Traffic-opengauss";
+        String message = "this is a traffic test for set transaction" +
+                "1. one DB have only one connection" +
+                "2. session A run 'set session transaction read only', close session A" +
+                "3. session B run 'update' successful";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }

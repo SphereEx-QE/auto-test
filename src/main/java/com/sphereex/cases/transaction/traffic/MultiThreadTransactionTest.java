@@ -23,16 +23,6 @@ public class MultiThreadTransactionTest extends TrafficBaseTest {
     
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
     
-    public MultiThreadTransactionTest() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("MultiThreadTransactionTest");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("conf/Traffic");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("Connection in transaction should be traffic to proxy.");
-        setCaseInfo(caseInfo);
-    }
-    
     @Override
     public void run() throws Exception {
         for (int i = 0; i < 10; i++) {
@@ -53,6 +43,16 @@ public class MultiThreadTransactionTest extends TrafficBaseTest {
                 throw new Exception("execute error");
             }
         }
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "MultiThreadTransactionTest";
+        String feature = "transaction";
+        String tag = "conf/Traffic";
+        String message = "Connection in transaction should be traffic to proxy.";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
     
     private void execute(final Iterator<Connection> iterator) {

@@ -21,22 +21,9 @@ public class ClassicTransfer extends BaseCaseImpl {
 
     private String jUrl;
 
-    public ClassicTransfer() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("ClassicTransfer");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("OpenGauss");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a test for classic transfer" +
-                "1. 20 treads execute transfer operations concurrently" +
-                "2. Randomly query the sum of balance to verify whether the data is consistent");
-        setCaseInfo(caseInfo);
-    }
-
     @Override
     public void pre() throws Exception {
         jUrl = String.format("jdbc:opengauss://%s:%d/%s", getDbInfo().getIp(), getDbInfo().getPort(), getDbInfo().getDbName());
-        super.pre();
         Statement stmt;
         Connection conn = DriverManager.getConnection(jUrl, getDbInfo().getUser(), getDbInfo().getPassword());
         stmt = conn.createStatement();
@@ -48,7 +35,6 @@ public class ClassicTransfer extends BaseCaseImpl {
 
     @Override
     public void run() throws Exception {
-        super.run();
         List<Thread> tasks = new LinkedList<>();
         for (int i=0; i<20;i++) {
             Thread t = new UpdateTread();
@@ -70,8 +56,19 @@ public class ClassicTransfer extends BaseCaseImpl {
         }
         getCaseInfo().setStatus(true);
     }
-
-
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "ClassicTransfer";
+        String feature = "transaction";
+        String tag = "OpenGauss";
+        String message = "this is a test for classic transfer" +
+                "1. 20 treads execute transfer operations concurrently" +
+                "2. Randomly query the sum of balance to verify whether the data is consistent";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
+    }
+    
     int getBalanceSum() throws Exception{
         int result = 0;
         Connection connection = DriverManager.getConnection(jUrl, getDbInfo().getUser(), getDbInfo().getPassword());

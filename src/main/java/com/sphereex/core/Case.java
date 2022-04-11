@@ -8,6 +8,10 @@ public interface Case {
     void end() throws Exception;
 
     void start() throws Exception;
+    
+    void initCaseInfo();
+    
+    boolean caseInfoIsNull();
 
     CaseInfo getCaseInfo();
 

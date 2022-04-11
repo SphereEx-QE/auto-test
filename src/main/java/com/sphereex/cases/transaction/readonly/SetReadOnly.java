@@ -19,22 +19,8 @@ public class SetReadOnly extends BaseCaseImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(SetReadOnly.class);
 
-    public SetReadOnly() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("SetReadOnly");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("MySQL");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a test for set transaction" +
-                "1. one DB have only one connection" +
-                "2. session A run 'set session transaction read only', close session A" +
-                "3. session B run 'update' successful");
-        setCaseInfo(caseInfo);
-    }
-
     @Override
     public void pre() throws Exception {
-        super.pre();
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
         Statement stmt;
@@ -54,7 +40,6 @@ public class SetReadOnly extends BaseCaseImpl {
 
     @Override
     public void run() throws Exception {
-        super.run();
         step1();
         step2();
     }
@@ -126,9 +111,16 @@ public class SetReadOnly extends BaseCaseImpl {
     }
 
     @Override
-    public void end() throws Exception {
-        super.end();
-        getCaseInfo().setStatus(true);
+    public void initCaseInfo() {
+        String name = "SetReadOnly";
+        String feature = "transaction";
+        String tag = "MySQL";
+        String message = "this is a test for set transaction" +
+                "1. one DB have only one connection" +
+                "2. session A run 'set session transaction read only', close session A" +
+                "3. session B run 'update' successful";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }
 

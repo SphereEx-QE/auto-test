@@ -9,19 +9,34 @@ import java.sql.ResultSet;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
-@AutoTest
 public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
     
-    public ShardingJdbcSavepointTest() {
-//        super("mysql");
-//        super("opengauss");
-        super("postgresql");
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("ShardingJdbcSavepointTest");
-        caseInfo.setFeature("transaction-jdbc");
-        caseInfo.setTag("savepoint");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a test for savepoint" +
+    public ShardingJdbcSavepointTest(String dbType) {
+        super(dbType);
+    }
+
+    @Override
+    public void pre() throws Exception {
+        Connection conn = getDataSource().getConnection();
+        Statement dropTable = conn.createStatement();
+        dropTable.execute("drop table if exists account;");
+        Statement createTable = conn.createStatement();
+        createTable.execute("create table account(id int, balance float ,transaction_id int);");
+        conn.close();
+    }
+    
+    @Override
+    public void run() throws Exception {
+        case1();
+        case2();
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "ShardingJdbcSavepointTest";
+        String feature = "transaction-jdbc";
+        String tag = "savepoint";
+        String message = "this is a test for savepoint" +
                 "1. create a session" +
                 "2. begin a transaction" +
                 "3. check if row count is 0" +
@@ -34,26 +49,9 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
                 "10. check if row count is 1" +
                 "11. commit the transaction" +
                 "12. check if row count is 1" +
-                "13. test for release savepoint");
+                "13. test for release savepoint";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
         setCaseInfo(caseInfo);
-    }
-    
-    @Override
-    public void pre() throws Exception {
-        super.pre();
-        Connection conn = getDataSource().getConnection();
-        Statement dropTable = conn.createStatement();
-        dropTable.execute("drop table if exists account;");
-        Statement createTable = conn.createStatement();
-        createTable.execute("create table account(id int, balance float ,transaction_id int);");
-        conn.close();
-    }
-    
-    @Override
-    public void run() throws Exception {
-        super.run();
-        case1();
-        case2();
     }
     
     private void case1() throws Exception{

@@ -15,28 +15,14 @@ public class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
     
     private  final Logger logger = LoggerFactory.getLogger(TrafficSetTransactionIsolationLevelTest.class);
     
-    public TrafficSetTransactionIsolationLevelTest() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("TrafficSetTransactionIsolationLevelTest");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("Traffic-opengauss");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a Traffic test for opengauss store" +
-                "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
-                "2. session A run commit, then session B can see the insert data");
-        setCaseInfo(caseInfo);
-    }
-    
     @Override
     public void run() throws SQLException {
         Connection conn1 = getDataSource().getConnection();
         Connection conn2 = getDataSource().getConnection();
         Statement stmt1 = conn1.createStatement();
-//        stmt1.execute("set session transaction isolation level read committed;");
         stmt1.execute("set transaction isolation level read committed;");
         
         Statement stmt2 = conn2.createStatement();
-//        stmt2.execute("set session transaction isolation level read committed;");
         stmt2.execute("set transaction isolation level read committed;");
         
         conn1.setAutoCommit(false);
@@ -61,5 +47,17 @@ public class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
         }
         conn1.close();
         conn2.close();
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "TrafficSetTransactionIsolationLevelTest";
+        String feature = "transaction";
+        String tag = "Traffic-opengauss";
+        String message = "this is a Traffic test for opengauss store" +
+                "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
+                "2. session A run commit, then session B can see the insert data";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }

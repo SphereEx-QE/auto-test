@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class TrafficBaseTest extends BaseCaseImpl {
+public abstract class TrafficBaseTest extends BaseCaseImpl {
     
     private final Logger logger = LoggerFactory.getLogger(TrafficBaseTest.class);
     
@@ -26,10 +26,5 @@ public class TrafficBaseTest extends BaseCaseImpl {
             logger.error("/traffic/config-sharding.yaml not exist.");
             throw new Exception("/traffic/config-sharding.yaml not exist.");
         }
-    }
-    
-    @Override
-    public void end() throws SQLException {
-        getCaseInfo().setStatus(true);
     }
 }

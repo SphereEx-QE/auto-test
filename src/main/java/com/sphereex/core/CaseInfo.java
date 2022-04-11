@@ -1,24 +1,26 @@
 package com.sphereex.core;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 // Case meta data
-@Setter
 @Getter
+@RequiredArgsConstructor
 public class CaseInfo {
 
-    private String name;
+    private final String name;
 
 //    feature which case belong to
-    private String feature;
+    private final String feature;
 
 //    case tag
-    private String tag;
+    private final String tag;
 
 //    describe of case
-    private String message;
+    private final String message;
 
 //    case status
-    private boolean status;
+    @Setter
+    private boolean status = false;
 }

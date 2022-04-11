@@ -23,18 +23,6 @@ public class Case1 extends BaseCaseImpl {
 
     private  final Logger logger = LoggerFactory.getLogger(Case1.class);
 
-    public Case1() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("case1");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("MySQL");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a test for mysql store" +
-                "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
-                "2. session A run commit, then session B can see the insert data");
-        setCaseInfo(caseInfo);
-    }
-
     @Override
     public void pre() throws ClassNotFoundException, SQLException {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
@@ -80,5 +68,17 @@ public class Case1 extends BaseCaseImpl {
         conn3.close();
         conn1.close();
         conn2.close();
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "case1";
+        String feature = "transaction";
+        String tag = "MySQL";
+        String message = "this is a test for mysql store" +
+                "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
+                "2. session A run commit, then session B can see the insert data";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }

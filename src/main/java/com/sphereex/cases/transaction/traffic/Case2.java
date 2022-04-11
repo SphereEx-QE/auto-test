@@ -15,18 +15,6 @@ public class Case2 extends TrafficBaseTest {
 
     private  final Logger logger = LoggerFactory.getLogger(Case2.class);
 
-    public Case2() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("Traffic-opengauss-case2");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("Traffic-opengauss");
-        caseInfo.setStatus(false);
-        caseInfo.setMessage("this is a traffic test for set transaction" +
-                "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
-                "2. session A run begin, then session B can see the insert data");
-        setCaseInfo(caseInfo);
-    }
-
     @Override
     public void pre() throws Exception {
         super.pre();
@@ -84,6 +72,18 @@ public class Case2 extends TrafficBaseTest {
         Connection conn = getDataSource().getConnection();
         conn.createStatement().execute("delete from t_order");
         conn.close();
-        super.end();
+        getCaseInfo().setStatus(true);
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "Traffic-opengauss-case2";
+        String feature = "transaction";
+        String tag = "Traffic-opengauss";
+        String message = "this is a traffic test for set transaction" +
+                "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
+                "2. session A run begin, then session B can see the insert data";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }

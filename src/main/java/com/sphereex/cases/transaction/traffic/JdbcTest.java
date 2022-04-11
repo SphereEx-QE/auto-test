@@ -13,15 +13,6 @@ import java.sql.SQLException;
 public class JdbcTest extends TrafficBaseTest{
     private  final Logger logger = LoggerFactory.getLogger(TrafficSetTransactionIsolationLevelTest.class);
     
-    public JdbcTest() {
-        CaseInfo caseInfo = new CaseInfo();
-        caseInfo.setName("JdbcTest");
-        caseInfo.setFeature("transaction");
-        caseInfo.setTag("conf/Traffic");
-        caseInfo.setStatus(false);
-        setCaseInfo(caseInfo);
-    }
-    
     @Override
     public void run() throws SQLException {
         Connection conn1 = getDataSource().getConnection();
@@ -30,5 +21,15 @@ public class JdbcTest extends TrafficBaseTest{
         preparedStatement.setInt(1,1);
         preparedStatement.execute();
         conn1.commit();
+    }
+    
+    @Override
+    public void initCaseInfo() {
+        String name = "JdbcTest";
+        String feature = "transaction";
+        String tag = "conf/Traffic";
+        String message = "";
+        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
+        setCaseInfo(caseInfo);
     }
 }
