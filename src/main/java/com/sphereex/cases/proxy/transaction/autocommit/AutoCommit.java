@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.case1;
+package com.sphereex.cases.proxy.transaction.autocommit;
 
 import com.sphereex.cases.BaseCaseImpl;
 import com.sphereex.core.AutoTest;
@@ -15,13 +15,13 @@ import java.sql.Statement;
 import java.util.Objects;
 
 @AutoTest
-public class Case1 extends BaseCaseImpl {
+public class AutoCommit extends BaseCaseImpl {
 
     private Connection conn1;
 
     private Connection conn2;
 
-    private  final Logger logger = LoggerFactory.getLogger(Case1.class);
+    private  final Logger logger = LoggerFactory.getLogger(AutoCommit.class);
 
     @Override
     public void pre() throws ClassNotFoundException, SQLException {
@@ -72,8 +72,8 @@ public class Case1 extends BaseCaseImpl {
     
     @Override
     public void initCaseInfo() {
-        String name = "case1";
-        String feature = "transaction";
+        String name = "AutoCommit";
+        String feature = "proxy-transaction";
         String tag = "MySQL";
         String message = "this is a test for mysql store" +
                 "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +

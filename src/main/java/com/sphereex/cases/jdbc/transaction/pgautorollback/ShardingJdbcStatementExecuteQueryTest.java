@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.pgautorollback;
+package com.sphereex.cases.jdbc.transaction.pgautorollback;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
@@ -6,7 +6,6 @@ import com.sphereex.core.CaseInfo;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,9 +14,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @AutoTest
-public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTest {
+public class ShardingJdbcStatementExecuteQueryTest extends ShardingJdbcBaseTest {
     
-    public ShardingJdbcPreparedStatementExecuteTest() {
+    public ShardingJdbcStatementExecuteQueryTest() {
         super("opengauss");
     }
     
@@ -40,11 +39,10 @@ public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTe
         conn.setAutoCommit(false);
         assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
         Statement statement2 = conn.createStatement();
-        PreparedStatement statement3 = conn.prepareStatement("update account1 set balance=100 where id=?");
+        Statement statement3 = conn.createStatement();
         try {
             statement2.execute("update account set balance=100 where id=1;");
-            statement3.setInt(1,1);
-            statement3.execute();
+            statement3.executeQuery("select * from account1;");
             throw new SQLException("expect report SQLException, but not report");
         } catch (SQLException ex) {
             assertTrue(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
@@ -62,9 +60,9 @@ public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTe
     
     @Override
     public void initCaseInfo() {
-        String name = "ShardingJdbcPreparedStatementExecuteTest";
-        String feature = "transaction";
-        String tag = "jdbc-pg-og-auto-rollback";
+        String name = "ShardingJdbcStatementExecuteQueryTest";
+        String feature = "jdbc-transaction";
+        String tag = "pg-og-auto-rollback";
         String message = "";
         CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
         setCaseInfo(caseInfo);

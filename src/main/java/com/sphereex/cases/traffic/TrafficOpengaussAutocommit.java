@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.traffic;
+package com.sphereex.cases.traffic;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
@@ -11,9 +11,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @AutoTest
-public class Case2 extends TrafficBaseTest {
+public class TrafficOpengaussAutocommit extends TrafficBaseTest {
 
-    private  final Logger logger = LoggerFactory.getLogger(Case2.class);
+    private  final Logger logger = LoggerFactory.getLogger(TrafficOpengaussAutocommit.class);
 
     @Override
     public void pre() throws Exception {
@@ -77,9 +77,9 @@ public class Case2 extends TrafficBaseTest {
     
     @Override
     public void initCaseInfo() {
-        String name = "Traffic-opengauss-case2";
-        String feature = "transaction";
-        String tag = "Traffic-opengauss";
+        String name = "TrafficOpengaussAutocommit";
+        String feature = "traffic-transaction";
+        String tag = "autocommit";
         String message = "this is a traffic test for set transaction" +
                 "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
                 "2. session A run begin, then session B can see the insert data";

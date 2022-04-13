@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.readonly;
+package com.sphereex.cases.proxy.transaction.readonly;
 
 import com.sphereex.cases.BaseCaseImpl;
 import com.sphereex.core.AutoTest;
@@ -113,7 +113,7 @@ public class SetReadOnly extends BaseCaseImpl {
     @Override
     public void initCaseInfo() {
         String name = "SetReadOnly";
-        String feature = "transaction";
+        String feature = "proxy-transaction";
         String tag = "MySQL";
         String message = "this is a test for set transaction" +
                 "1. one DB have only one connection" +

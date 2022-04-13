@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.traffic;
+package com.sphereex.cases.traffic;
 
 import com.sphereex.cases.BaseCaseImpl;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 
 public abstract class TrafficBaseTest extends BaseCaseImpl {
     

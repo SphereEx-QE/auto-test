@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.traffic;
+package com.sphereex.cases.traffic;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
@@ -52,8 +52,8 @@ public class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
     @Override
     public void initCaseInfo() {
         String name = "TrafficSetTransactionIsolationLevelTest";
-        String feature = "transaction";
-        String tag = "Traffic-opengauss";
+        String feature = "traffic-transaction";
+        String tag = "Topengauss";
         String message = "this is a Traffic test for opengauss store" +
                 "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
                 "2. session A run commit, then session B can see the insert data";

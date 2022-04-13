@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.classictransfer;
+package com.sphereex.cases.proxy.transaction.classictransfer;
 
 import com.sphereex.cases.BaseCaseImpl;
 import com.sphereex.core.AutoTest;
@@ -60,7 +60,7 @@ public class ClassicTransfer extends BaseCaseImpl {
     @Override
     public void initCaseInfo() {
         String name = "ClassicTransfer";
-        String feature = "transaction";
+        String feature = "proxy-transaction";
         String tag = "OpenGauss";
         String message = "this is a test for classic transfer" +
                 "1. 20 treads execute transfer operations concurrently" +

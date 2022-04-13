@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.pgautorollback;
+package com.sphereex.cases.jdbc.transaction.pgautorollback;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
@@ -43,8 +43,8 @@ public class ShardingJdbcStatementExecuteTest extends ShardingJdbcBaseTest {
     @Override
     public void initCaseInfo() {
         String name = "ShardingJdbcStatementExecuteTest";
-        String feature = "transaction";
-        String tag = "jdbc-pg-og-auto-rollback";
+        String feature = "jdbc-transaction";
+        String tag = "pg-og-auto-rollback";
         String message = "";
         CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
         setCaseInfo(caseInfo);

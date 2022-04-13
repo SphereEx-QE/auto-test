@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.traffic;
+package com.sphereex.cases.traffic;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
@@ -48,7 +48,7 @@ public class MultiThreadTransactionTest extends TrafficBaseTest {
     @Override
     public void initCaseInfo() {
         String name = "MultiThreadTransactionTest";
-        String feature = "transaction";
+        String feature = "traffic-transaction";
         String tag = "conf/Traffic";
         String message = "Connection in transaction should be traffic to proxy.";
         CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);

@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.savepoint;
+package com.sphereex.cases.jdbc.transaction.savepoint;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
@@ -34,7 +34,7 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
     @Override
     public void initCaseInfo() {
         String name = "ShardingJdbcSavepointTest";
-        String feature = "transaction-jdbc";
+        String feature = "jdbc-transaction";
         String tag = "savepoint";
         String message = "this is a test for savepoint" +
                 "1. create a session" +

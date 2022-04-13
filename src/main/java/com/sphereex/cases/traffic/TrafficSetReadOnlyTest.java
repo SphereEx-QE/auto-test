@@ -1,4 +1,4 @@
-package com.sphereex.cases.transaction.traffic;
+package com.sphereex.cases.traffic;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
@@ -112,8 +112,8 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
     @Override
     public void initCaseInfo() {
         String name = "TrafficSetReadOnlyTest";
-        String feature = "transaction";
-        String tag = "Traffic-opengauss";
+        String feature = "traffic-transaction";
+        String tag = "opengauss";
         String message = "this is a traffic test for set transaction" +
                 "1. one DB have only one connection" +
                 "2. session A run 'set session transaction read only', close session A" +

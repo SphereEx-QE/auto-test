@@ -1,10 +1,11 @@
-package com.sphereex.cases.transaction.savepoint;
+package com.sphereex.cases.proxy.transaction.savepoint;
 
 import com.sphereex.cases.BaseCaseImpl;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBInfo;
-import com.sphereex.utils.MySQLUtil;
+import com.sphereex.utils.OpenGaussUtil;
+import org.opengauss.jdbc.PSQLSavepoint;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,12 +14,12 @@ import java.sql.Statement;
 import java.util.Objects;
 
 @AutoTest
-public class MySQLSavepointTest extends BaseCaseImpl {
+public class OpengaussSavepointTest extends BaseCaseImpl {
     
     @Override
     public void pre() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
         Statement stmt;
         Statement stmt1;
         stmt = conn.createStatement();
@@ -34,11 +35,12 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     public void run() throws Exception {
         case1();
         case2();
+        case3();
     }
     
-    private void case1() throws Exception{
+    private void case1 () throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
         conn.setAutoCommit(false);
         checkRowCount(conn, 0);
         Statement statement1 = conn.createStatement();
@@ -57,7 +59,7 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     
     private void case2() throws Exception{
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
         conn.setAutoCommit(false);
         checkRowCount(conn, 1);
         Statement statement1 = conn.createStatement();
@@ -87,16 +89,44 @@ public class MySQLSavepointTest extends BaseCaseImpl {
         }
     }
     
-    @Override
-    public void end() throws Exception {
-        getCaseInfo().setStatus(true);
+    private void case3() throws Exception{
+        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
+        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
+        try {
+            conn.setSavepoint("point");
+            throw new Exception("expect exception, but no exception report");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            if (!"Cannot establish a savepoint in auto-commit mode.".equals(ex.getMessage())) {
+                throw new Exception("expect exception message error");
+
+            }
+        }
+        try {
+            conn.rollback(new PSQLSavepoint("point1"));
+            throw new Exception("expect exception, but no exception report");
+        } catch (Exception ex) {
+            if (!ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks")) {
+                throw new Exception("expect exception message error");
+            }
+        }
+
+        try {
+            conn.releaseSavepoint(new PSQLSavepoint("point1"));
+            throw new Exception("expect exception, but no exception report");
+        } catch (Exception ex) {
+            if (!ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks")) {
+                throw new Exception("expect exception message error");
+            }
+        }
+        conn.close();
     }
     
     @Override
     public void initCaseInfo() {
-        String name = "MySQLSavepointTest";
-        String feature = "transaction";
-        String tag = "mysql-savepoint";
+        String name = "OpengaussSavepointTest";
+        String feature = "proxy-transaction";
+        String tag = "savepoint";
         String message = "this is a test for savepoint" +
                 "1. create a session" +
                 "2. begin a transaction" +

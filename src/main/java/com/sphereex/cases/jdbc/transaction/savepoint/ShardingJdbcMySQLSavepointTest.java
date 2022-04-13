@@ -1,19 +1,19 @@
-package com.sphereex.cases.transaction.savepoint;
+package com.sphereex.cases.jdbc.transaction.savepoint;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 
 @AutoTest
-public class ShardingJdbcOpengaussSavepointTest extends ShardingJdbcSavepointTest {
+public final class ShardingJdbcMySQLSavepointTest extends ShardingJdbcSavepointTest {
     
-    public ShardingJdbcOpengaussSavepointTest() {
-        super("opengauss");
+    public ShardingJdbcMySQLSavepointTest() {
+        super("mysql");
     }
     
     @Override
     public void initCaseInfo() {
-        String name = "ShardingJdbcOpengaussSavepointTest";
-        String feature = "transaction-jdbc";
+        String name = "ShardingJdbcMySQLSavepointTest";
+        String feature = "jdbc-transaction";
         String tag = "savepoint";
         String message = "this is a test for savepoint" +
                 "1. create a session" +
