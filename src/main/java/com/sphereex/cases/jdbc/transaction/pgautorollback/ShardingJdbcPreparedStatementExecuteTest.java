@@ -4,6 +4,8 @@ import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,11 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 @AutoTest
 public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTest {
+    
+    private final Logger logger = LoggerFactory.getLogger(ShardingJdbcPreparedStatementExecuteTest.class);
     
     public ShardingJdbcPreparedStatementExecuteTest() {
         super("opengauss");
@@ -35,29 +36,41 @@ public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTe
     }
     
     @Override
-    public void run() throws SQLException {
+    public boolean run() throws SQLException {
         ShardingSphereConnection conn = (ShardingSphereConnection) getDataSource().getConnection();
         conn.setAutoCommit(false);
-        assertFalse(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
+        if (conn.getConnectionManager().getConnectionTransaction().isRollbackOnly()) {
+            logger.error("expect transaction is not rollback only, but transaction rollback only.");
+            return false;
+        }
         Statement statement2 = conn.createStatement();
         PreparedStatement statement3 = conn.prepareStatement("update account1 set balance=100 where id=?");
         try {
             statement2.execute("update account set balance=100 where id=1;");
             statement3.setInt(1,1);
             statement3.execute();
-            throw new SQLException("expect report SQLException, but not report");
+            logger.error("expect report SQLException, but not report");
+            return false;
         } catch (SQLException ex) {
-            assertTrue(conn.getConnectionManager().getConnectionTransaction().isRollbackOnly());
+            if (!conn.getConnectionManager().getConnectionTransaction().isRollbackOnly()) {
+                logger.error("expect transaction rollback only, but not");
+                return false;
+            }
         }
         conn.commit();
         Statement statement4 = conn.createStatement();
         ResultSet r = statement4.executeQuery("select * from account;");
         if (r.next()) {
             int balance = r.getInt("balance");
-            assertTrue(balance == 1);
+            if (1 != balance) {
+                logger.error("expect balance is 1, but balance:%d.", balance);
+                return false;
+            }
         } else {
-            throw new SQLException("expect one recode, but not.");
+            logger.error("expect one recode, but not.");
+            return false;
         }
+        return true;
     }
     
     @Override

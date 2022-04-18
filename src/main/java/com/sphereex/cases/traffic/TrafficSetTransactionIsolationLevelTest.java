@@ -16,7 +16,7 @@ public class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
     private  final Logger logger = LoggerFactory.getLogger(TrafficSetTransactionIsolationLevelTest.class);
     
     @Override
-    public void run() throws SQLException {
+    public boolean run() throws SQLException {
         Connection conn1 = getDataSource().getConnection();
         Connection conn2 = getDataSource().getConnection();
         Statement stmt1 = conn1.createStatement();
@@ -35,7 +35,7 @@ public class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
         
         if (result1.next()) {
             logger.error("there should not be result");
-            return;
+            return false;
         }
         conn1.commit();
         
@@ -43,15 +43,15 @@ public class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
         
         if (!result2.next()) {
             logger.error("there should be result");
-            return;
+            return false;
         }
         conn1.close();
         conn2.close();
+        return true;
     }
     
     @Override
     public void end() throws Exception {
-    
     }
     
     @Override

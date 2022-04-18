@@ -24,7 +24,7 @@ public class MultiThreadTransactionTest extends TrafficBaseTest {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
     
     @Override
-    public void run() throws Exception {
+    public boolean run() throws Exception {
         for (int i = 0; i < 10; i++) {
             Connection connection = getDataSource().getConnection();
             connection.setAutoCommit(false);
@@ -40,9 +40,10 @@ public class MultiThreadTransactionTest extends TrafficBaseTest {
                 each.get();
             } catch (InterruptedException | ExecutionException e) {
                 logger.error("execute error", e);
-                throw new Exception("execute error");
+                return false;
             }
         }
+        return true;
     }
     
     @Override

@@ -27,7 +27,7 @@ public class TrafficOpengaussAutocommit extends TrafficBaseTest {
     }
 
     @Override
-    public void run() throws SQLException {
+    public boolean run() throws SQLException {
         Connection conn1 = getDataSource().getConnection();
         Connection conn2 = getDataSource().getConnection();
         
@@ -47,7 +47,7 @@ public class TrafficOpengaussAutocommit extends TrafficBaseTest {
 
         if (result1.next()) {
             logger.error("there should not be result");
-            return;
+            return false;
         }
         try {
             conn1.createStatement().execute("begin;");
@@ -60,10 +60,11 @@ public class TrafficOpengaussAutocommit extends TrafficBaseTest {
 
         if (!result2.next()) {
             logger.error("there should be result");
-            return;
+            return false;
         }
         conn1.close();
         conn2.close();
+        return true;
     }
 
     @Override

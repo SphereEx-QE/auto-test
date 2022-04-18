@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
 
 public abstract class ShardingJdbcBaseTest extends BaseCaseImpl {
     

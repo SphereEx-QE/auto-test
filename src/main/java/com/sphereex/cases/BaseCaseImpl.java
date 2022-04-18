@@ -15,10 +15,21 @@ public abstract class BaseCaseImpl implements Case {
     private DBInfo dbInfo;
   
     @Override
-    public void start() throws Exception {
-        pre();
-        run();
-        end();
+    public boolean start() throws Exception {
+        boolean r;
+        try {
+            pre();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        r = run();
+        try {
+            end();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return r;
     }
     
     @Override

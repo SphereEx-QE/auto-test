@@ -5,6 +5,8 @@ import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBInfo;
 import com.sphereex.utils.MySQLUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,6 +16,8 @@ import java.util.Objects;
 
 @AutoTest
 public class MySQLSavepointTest extends BaseCaseImpl {
+    
+    private static final Logger logger = LoggerFactory.getLogger(MySQLSavepointTest.class);
     
     @Override
     public void pre() throws Exception {
@@ -31,50 +35,76 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     }
     
     @Override
-    public void run() throws Exception {
-        case1();
-        case2();
+    public boolean run() throws Exception {
+        boolean r1 = case1();
+        boolean r2 = case2();
+        if (!r1 || !r2) {
+            return false;
+        }
+        return true;
     }
     
-    private void case1() throws Exception{
+    private boolean case1() throws Exception{
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         conn.setAutoCommit(false);
-        checkRowCount(conn, 0);
+        if (!checkRowCount(conn, 0)) {
+            return false;
+        }
         Statement statement1 = conn.createStatement();
         statement1.execute("insert into account(id, balance, transaction_id) values(1,1,1);");
         Savepoint point1 = conn.setSavepoint("point1");
-        checkRowCount(conn, 1);
+        if (!checkRowCount(conn, 1)) {
+            return false;
+        }
         Statement statement2 = conn.createStatement();
         statement2.execute("insert into account(id, balance, transaction_id) values(2,2,2);");
-        checkRowCount(conn, 2);
+        if (!checkRowCount(conn, 2)) {
+            return false;
+        }
         conn.rollback(point1);
-        checkRowCount(conn, 1);
+        if (!checkRowCount(conn, 1)) {
+            return false;
+        }
         conn.commit();
-        checkRowCount(conn, 1);
+        if (!checkRowCount(conn, 1)) {
+            return false;
+        }
         conn.close();
+        return true;
     }
     
-    private void case2() throws Exception{
+    private boolean case2() throws Exception{
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         conn.setAutoCommit(false);
-        checkRowCount(conn, 1);
+        if (!checkRowCount(conn, 1)) {
+            return false;
+        }
         Statement statement1 = conn.createStatement();
         statement1.execute("insert into account(id, balance, transaction_id) values(2,2,2);");
         Savepoint point2 = conn.setSavepoint("point2");
-        checkRowCount(conn, 2);
+        if (!checkRowCount(conn, 2)) {
+            return false;
+        }
         Statement statement2 = conn.createStatement();
         statement2.execute("insert into account(id, balance, transaction_id) values(3,3,3);");
-        checkRowCount(conn, 3);
+        if (!checkRowCount(conn, 3)) {
+            return false;
+        }
         conn.releaseSavepoint(point2);
-        checkRowCount(conn, 3);
+        if (!checkRowCount(conn, 3)) {
+            return false;
+        }
         conn.commit();
-        checkRowCount(conn, 3);
+        if (!checkRowCount(conn, 3)) {
+            return false;
+        }
         conn.close();
+        return true;
     }
     
-    private void checkRowCount(Connection conn, int rowNum) throws Exception {
+    private boolean checkRowCount(Connection conn, int rowNum) throws Exception {
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery("select * from account;");
         int rn = 0;
@@ -83,8 +113,10 @@ public class MySQLSavepointTest extends BaseCaseImpl {
         }
         statement.close();
         if (rn != rowNum) {
-            throw new Exception(String.format("recode num assert error, expect:%d, actual:%d.", rowNum, rn));
+            logger.error("recode num assert error, expect:%d, actual:%d.", rowNum, rn);
+            return false;
         }
+        return true;
     }
     
     @Override

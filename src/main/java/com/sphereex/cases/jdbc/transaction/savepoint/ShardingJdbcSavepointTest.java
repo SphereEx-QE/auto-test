@@ -3,6 +3,8 @@ package com.sphereex.cases.jdbc.transaction.savepoint;
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,6 +12,8 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 
 public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
+    
+    private static final Logger logger = LoggerFactory.getLogger(ShardingJdbcSavepointTest.class);
     
     public ShardingJdbcSavepointTest(String dbType) {
         super(dbType);
@@ -26,9 +30,13 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
     }
     
     @Override
-    public void run() throws Exception {
-        case1();
-        case2();
+    public boolean run() throws Exception {
+        boolean r1 = case1();
+        boolean r2 = case2();
+        if (!r1 || !r2) {
+            return false;
+        }
+        return true;
     }
     
     @Override
@@ -59,7 +67,7 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
         setCaseInfo(caseInfo);
     }
     
-    private void case1() throws Exception{
+    private boolean case1() throws Exception{
         Connection conn = getDataSource().getConnection();
         conn.setAutoCommit(false);
         Statement std1 = conn.createStatement();
@@ -68,14 +76,21 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
         Savepoint point1 = conn.setSavepoint("point1");
         Statement std2 = conn.createStatement();
         std2.execute("insert into account(id, balance, transaction_id) values(2,2,2);");
-        checkRowCount(conn, 2);
+        if (!checkRowCount(conn, 2)) {
+            return false;
+        }
         conn.rollback(point1);
-        checkRowCount(conn, 1);
+        if (!checkRowCount(conn, 1)) {
+            return false;
+        }
         conn.commit();
-        checkRowCount(conn, 1);
+        if (!checkRowCount(conn, 1)) {
+            return false;
+        }
+        return true;
     }
 
-    private void case2() throws Exception{
+    private boolean case2() throws Exception{
         Connection conn = getDataSource().getConnection();
         conn.setAutoCommit(false);
         Statement std1 = conn.createStatement();
@@ -84,14 +99,21 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
         Savepoint point1 = conn.setSavepoint("point1");
         Statement std2 = conn.createStatement();
         std2.execute("insert into account(id, balance, transaction_id) values(3,3,3);");
-        checkRowCount(conn, 3);
+        if (!checkRowCount(conn, 3)) {
+            return false;
+        }
         conn.rollback(point1);
-        checkRowCount(conn, 2);
+        if (!checkRowCount(conn, 2)) {
+            return false;
+        }
         conn.rollback();
-        checkRowCount(conn, 1);
+        if (!checkRowCount(conn, 1)) {
+            return false;
+        }
+        return true;
     }
 
-    private void checkRowCount(Connection conn, int rowNum) throws Exception {
+    private boolean checkRowCount(Connection conn, int rowNum) throws Exception {
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery("select * from account;");
         int rn = 0;
@@ -100,7 +122,9 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
         }
         statement.close();
         if (rn != rowNum) {
-            throw new Exception(String.format("recode num assert error, expect:%d, actual:%d.", rowNum, rn));
+            logger.error("recode num assert error, expect:%d, actual:%d.", rowNum, rn);
+            return false;
         }
+        return true;
     }
 }

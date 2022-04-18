@@ -31,12 +31,16 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
     }
     
     @Override
-    public void run() throws Exception {
-        step1();
-        step2();
+    public boolean run() throws Exception {
+        boolean r1 = step1();
+        boolean r2 = step2();
+        if (!r1 || !r2) {
+            return false;
+        }
+        return true;
     }
     
-    private void step1() throws Exception {
+    private boolean step1() throws Exception {
         Connection conn = getDataSource().getConnection();
         conn.setReadOnly(true);
         Statement statement1 = conn.createStatement();
@@ -46,28 +50,32 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
             String content = rs.getString("content");
             if (id == 2) {
                 if (!"test2".equals(content)) {
-                    throw new Exception(String.format("content is %s, should be test2", content));
+                    logger.error("content is %s, should be test2", content);
+                    return false;
                 }
             }
             if (id == 1) {
                 if (!"test1".equals(content)) {
-                    throw new Exception(String.format("content is %s, should be test1", content));
+                    logger.error("content is %s, should be test1", content);
+                    return false;
                 }
             }
         }
         Statement statement2 = conn.createStatement();
         try {
             statement2.execute("update t_order set content='test3' where order_id=2;");
-            throw new Exception("update run success, should failed");
+            logger.error("update run success, should failed");
+            return false;
         } catch (SQLException e) {
             logger.info("update failed for expect");
         }
         statement1.close();
         statement2.close();
         conn.close();
+        return true;
     }
     
-    private void step2() throws Exception {
+    private boolean step2() throws Exception {
         Connection conn = getDataSource().getConnection();
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from t_order");
@@ -76,12 +84,14 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
             String content = rs.getString("content");
             if (id == 2) {
                 if (!"test2".equals(content)) {
-                    throw new Exception(String.format("content is %s, should be test2", content));
+                    logger.error("content is %s, should be test2", content);
+                    return false;
                 }
             }
             if (id == 1) {
                 if (!"test1".equals(content)) {
-                    throw new Exception(String.format("content is %s, should be test1", content));
+                    logger.error("content is %s, should be test1", content);
+                    return false;
                 }
             }
         }
@@ -91,12 +101,15 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
         Statement statement3 = conn.createStatement();
         ResultSet r3 = statement3.executeQuery("select * from t_order where order_id=2");
         if (!r3.next()) {
-            throw new Exception("update run failed, should success");
+            logger.error("update run failed, should success");
+            return false;
         }
         String content = r3.getString("content");
         if (!"test3".equals(content)) {
-            throw new Exception("update run failed, should success");
+            logger.error("update run failed, should success");
+            return false;
         }
+        return true;
     }
     
     @Override

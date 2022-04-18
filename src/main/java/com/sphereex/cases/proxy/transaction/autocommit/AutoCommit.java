@@ -31,7 +31,7 @@ public class AutoCommit extends BaseCaseImpl {
     }
 
     @Override
-    public void run() throws SQLException {
+    public boolean run() throws SQLException {
         Statement stmt1 = conn1.createStatement();
         stmt1.execute("set session transaction isolation level read committed;");
 
@@ -48,7 +48,7 @@ public class AutoCommit extends BaseCaseImpl {
 
         if (result1.next()) {
             logger.error("there should not be result");
-            return;
+            return false;
         }
         conn1.createStatement().execute("commit;");
 
@@ -56,9 +56,9 @@ public class AutoCommit extends BaseCaseImpl {
 
         if (!result2.next()) {
             logger.error("there should be result");
-            return;
+            return false;
         }
-        getCaseInfo().setStatus(true);
+        return true;
     }
 
     @Override

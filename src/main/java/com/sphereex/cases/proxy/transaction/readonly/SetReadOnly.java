@@ -39,16 +39,20 @@ public class SetReadOnly extends BaseCaseImpl {
     }
 
     @Override
-    public void run() throws Exception {
-        step1();
-        step2();
+    public boolean run() throws Exception {
+        boolean r1 = step1();
+        boolean r2 = step2();
+        if (!r1 || !r2) {
+            return false;
+        }
+        return true;
     }
     
     @Override
     public void end() throws Exception {
     }
     
-    private void step1() throws Exception {
+    private boolean step1() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         conn.setReadOnly(true);
@@ -59,29 +63,32 @@ public class SetReadOnly extends BaseCaseImpl {
             int balance = rs.getInt("balance");
             if (id == 1) {
                 if (balance != 0) {
-                    throw new Exception(String.format("balance is %d, should be 0", balance));
+                    logger.error("balance is %d, should be 0", balance);
+                    return false;
                 }
             }
             if (id == 2) {
                 if (balance != 100) {
-                    throw new Exception(String.format("balance is %d, should be 100", balance));
+                    logger.error("balance is %d, should be 100", balance);
+                    return false;
                 }
             }
         }
         Statement statement2 = conn.createStatement();
         try {
             statement2.execute("update account set balance=100 where id=2;");
-            throw new Exception("update run success, should failed");
-
+            logger.error("update run success, should failed");
+            return false;
         } catch (SQLException e) {
             logger.info("update failed for expect");
         }
         statement1.close();
         statement2.close();
         conn.close();
+        return true;
     }
 
-    private void step2() throws Exception {
+    private boolean step2() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         Statement statement1 = conn.createStatement();
@@ -91,12 +98,14 @@ public class SetReadOnly extends BaseCaseImpl {
             int balance = rs.getInt("balance");
             if (id == 1) {
                 if (balance != 0) {
-                    throw new Exception(String.format("balance is %d, should be 0", balance));
+                    logger.error("balance is %d, should be 0", balance);
+                    return false;
                 }
             }
             if (id == 2) {
                 if (balance != 100) {
-                    throw new Exception(String.format("balance is %d, should be 100", balance));
+                    logger.error("balance is %d, should be 100", balance);
+                    return false;
                 }
             }
         }
@@ -106,12 +115,15 @@ public class SetReadOnly extends BaseCaseImpl {
         Statement statement3 = conn.createStatement();
         ResultSet r3 = statement3.executeQuery("select * from account where id=2");
         if (!r3.next()) {
-            throw new Exception("update run failed, should success");
+            logger.error("update run failed, should success");
+            return false;
         }
         int balanceend = r3.getInt("balance");
         if (balanceend != 101) {
-            throw new Exception("update run failed, should success");
+            logger.error("update run failed, should success");
+            return false;
         }
+        return true;
     }
 
     @Override

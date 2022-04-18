@@ -116,7 +116,7 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
     }
     
     @Override
-    public void run() throws Exception {
+    public boolean run() throws Exception {
         Statement stmt3307 = connections.get("proxy-3307").createStatement();
         ResultSet resultSet = stmt3307.executeQuery("show scaling list");
         String jobId = "";
@@ -124,6 +124,7 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
             jobId = resultSet.getString("id");
         }
         handleTest(10, 100, jobId);
+        return true;
     }
     
     @Override
