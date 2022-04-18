@@ -22,7 +22,7 @@ public class SetReadOnly extends BaseCaseImpl {
     @Override
     public void pre() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         Statement stmt;
         Statement stmt1;
         Statement stmt2;
@@ -46,7 +46,7 @@ public class SetReadOnly extends BaseCaseImpl {
 
     private void step1() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         conn.setReadOnly(true);
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from account;");
@@ -79,7 +79,7 @@ public class SetReadOnly extends BaseCaseImpl {
 
     private void step2() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from account");
         while (rs.next()) {

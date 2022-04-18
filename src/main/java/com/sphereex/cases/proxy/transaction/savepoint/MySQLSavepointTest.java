@@ -18,7 +18,7 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     @Override
     public void pre() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         Statement stmt;
         Statement stmt1;
         stmt = conn.createStatement();
@@ -38,7 +38,7 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     
     private void case1() throws Exception{
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         conn.setAutoCommit(false);
         checkRowCount(conn, 0);
         Statement statement1 = conn.createStatement();
@@ -57,7 +57,7 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     
     private void case2() throws Exception{
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
         conn.setAutoCommit(false);
         checkRowCount(conn, 1);
         Statement statement1 = conn.createStatement();

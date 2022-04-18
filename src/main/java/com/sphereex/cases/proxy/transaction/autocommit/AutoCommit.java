@@ -26,8 +26,8 @@ public class AutoCommit extends BaseCaseImpl {
     @Override
     public void pre() throws ClassNotFoundException, SQLException {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        conn1 = MySQLUtil.getInstance().getConnnection(dbInfo);
-        conn2 = MySQLUtil.getInstance().getConnnection(dbInfo);
+        conn1 = MySQLUtil.getInstance().getConnection(dbInfo);
+        conn2 = MySQLUtil.getInstance().getConnection(dbInfo);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AutoCommit extends BaseCaseImpl {
 
     @Override
     public void end() throws SQLException, ClassNotFoundException {
-        Connection conn3 = MySQLUtil.getInstance().getConnnection(getDbInfo());
+        Connection conn3 = MySQLUtil.getInstance().getConnection(getDbInfo());
         conn3.createStatement().execute("delete from account");
         conn3.close();
         conn1.close();
