@@ -89,7 +89,6 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     
     @Override
     public void end() throws Exception {
-        getCaseInfo().setStatus(true);
     }
     
     @Override

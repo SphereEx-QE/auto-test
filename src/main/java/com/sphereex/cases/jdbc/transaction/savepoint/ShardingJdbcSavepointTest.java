@@ -32,6 +32,11 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
     }
     
     @Override
+    public void end() throws Exception {
+    
+    }
+    
+    @Override
     public void initCaseInfo() {
         String name = "ShardingJdbcSavepointTest";
         String feature = "jdbc-transaction";

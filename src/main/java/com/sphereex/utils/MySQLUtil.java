@@ -11,7 +11,6 @@ public class MySQLUtil {
     private volatile static MySQLUtil instance;
 
     private MySQLUtil() throws ClassNotFoundException {
-//        Class.forName("com.mysql.jdbc.Driver");
         Class.forName("com.mysql.cj.jdbc.Driver");
     }
 

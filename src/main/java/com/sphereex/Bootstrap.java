@@ -70,6 +70,7 @@ public class Bootstrap {
         for (Case c : needRunCases) {
             try {
                 c.start();
+                c.getCaseInfo().setStatus(true);
             } catch (Exception e) {
                 logger.info(String.format("case %s throw exception", c.getCaseInfo().getName()));
                 e.printStackTrace();

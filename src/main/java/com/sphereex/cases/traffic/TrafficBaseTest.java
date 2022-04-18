@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
 
 public abstract class TrafficBaseTest extends BaseCaseImpl {
     
@@ -21,9 +20,10 @@ public abstract class TrafficBaseTest extends BaseCaseImpl {
     public void pre() throws Exception {
         try {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/traffic/config-sharding.yaml").getFile()));
-        } catch (IOException exception) {
-            logger.error("/traffic/config-sharding.yaml not exist.");
-            throw new Exception("/traffic/config-sharding.yaml not exist.");
+        } catch (Exception e) {
+            logger.error(" read /traffic/config-sharding.yaml failed.");
+            e.printStackTrace();
+            throw new Exception("read /traffic/config-sharding.yaml failed.");
         }
     }
 }

@@ -20,7 +20,6 @@ public class TrafficOpengaussAutocommit extends TrafficBaseTest {
         super.pre();
         Connection conn = getDataSource().getConnection();
         Statement stmt;
-        Statement stmt1;
         stmt = conn.createStatement();
         stmt.executeUpdate("delete from t_order;");
         stmt.close();

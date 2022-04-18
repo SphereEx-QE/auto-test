@@ -106,7 +106,6 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
         statement.executeUpdate("delete from t_order;");
         statement.close();
         conn.close();
-        getCaseInfo().setStatus(true);
     }
     
     @Override

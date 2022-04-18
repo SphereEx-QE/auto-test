@@ -59,6 +59,11 @@ public class ShardingJdbcStatementExecuteQueryTest extends ShardingJdbcBaseTest 
     }
     
     @Override
+    public void end() throws Exception {
+    
+    }
+    
+    @Override
     public void initCaseInfo() {
         String name = "ShardingJdbcStatementExecuteQueryTest";
         String feature = "jdbc-transaction";

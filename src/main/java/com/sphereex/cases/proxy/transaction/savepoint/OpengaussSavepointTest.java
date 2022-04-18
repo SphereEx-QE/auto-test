@@ -38,6 +38,11 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
         case3();
     }
     
+    @Override
+    public void end() throws Exception {
+    
+    }
+    
     private void case1 () throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);

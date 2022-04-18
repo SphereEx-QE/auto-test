@@ -40,7 +40,6 @@ public class ClassicTransfer extends BaseCaseImpl {
             Thread t = new UpdateTread();
             t.start();
             tasks.add(t);
-            Thread.sleep(100);
             int sum = getBalanceSum();
             if (100 != sum) {
                 throw new Exception(String.format("balance sum is %d, should be 100", sum));
@@ -54,7 +53,11 @@ public class ClassicTransfer extends BaseCaseImpl {
         for (Thread task: tasks) {
             task.join();
         }
-        getCaseInfo().setStatus(true);
+    }
+    
+    @Override
+    public void end() throws Exception {
+    
     }
     
     @Override
@@ -113,5 +116,3 @@ public class ClassicTransfer extends BaseCaseImpl {
         }
     }
 }
-
-

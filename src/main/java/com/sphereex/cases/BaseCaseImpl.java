@@ -14,10 +14,6 @@ public abstract class BaseCaseImpl implements Case {
 
     private DBInfo dbInfo;
   
-    public void end() throws Exception{
-        caseInfo.setStatus(true);
-    }
-
     @Override
     public void start() throws Exception {
         pre();

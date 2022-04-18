@@ -126,6 +126,13 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         handleTest(10, 100, jobId);
     }
     
+    @Override
+    public void end() throws Exception {
+        for (Connection each : connections.values()) {
+            each.close();
+        }
+    }
+    
     private void handleTest(final int threadSize, final int loopSize, final String jobId) {
         this.token = threadSize * loopSize;
         List<Thread> threadList = new LinkedList<>();
@@ -195,10 +202,10 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
     
     @Override
     public void initCaseInfo() {
-        String name = "stop writing for schema";
+        String name = "stop-writing-for-schema";
         String feature = "proxy-lock";
         String tag = "MySQL";
-        String message = "stop writing for schema";
+        String message = "stop-writing-for-schema";
         CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
         setCaseInfo(caseInfo);
     }

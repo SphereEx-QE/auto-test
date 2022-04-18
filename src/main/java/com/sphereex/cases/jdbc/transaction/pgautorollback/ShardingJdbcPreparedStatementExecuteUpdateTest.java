@@ -62,6 +62,11 @@ public class ShardingJdbcPreparedStatementExecuteUpdateTest extends ShardingJdbc
     }
     
     @Override
+    public void end() throws Exception {
+    
+    }
+    
+    @Override
     public void initCaseInfo() {
         String name = "ShardingJdbcPreparedStatementExecuteUpdateTest";
         String feature = "jdbc-transaction";

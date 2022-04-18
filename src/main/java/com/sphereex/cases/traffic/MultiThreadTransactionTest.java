@@ -46,6 +46,14 @@ public class MultiThreadTransactionTest extends TrafficBaseTest {
     }
     
     @Override
+    public void end() throws Exception {
+        for (Connection each : connections) {
+            each.close();
+        }
+        executorService.shutdown();
+    }
+    
+    @Override
     public void initCaseInfo() {
         String name = "MultiThreadTransactionTest";
         String feature = "traffic-transaction";

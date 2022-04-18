@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 
 public abstract class ShardingJdbcBaseTest extends BaseCaseImpl {
     
@@ -17,7 +16,7 @@ public abstract class ShardingJdbcBaseTest extends BaseCaseImpl {
     @Getter
     private DataSource dataSource;
     
-    private String dbType;
+    private final String dbType;
     
     public ShardingJdbcBaseTest(String dbType) {
         this.dbType = dbType;
@@ -43,32 +42,30 @@ public abstract class ShardingJdbcBaseTest extends BaseCaseImpl {
     private void createMysqlDatasource() throws Exception{
         try {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/conf/JdbcMysqlBase/config-sharding.yaml").getFile()));
-        } catch (IOException exception) {
-            logger.error("/conf/JdbcMysqlBase/config-sharding.yaml not exist.");
-            throw new Exception("/conf/JdbcMysqlBase/config-sharding.yaml not exist.");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            logger.error("read /conf/JdbcMysqlBase/config-sharding.yaml failed.");
+            throw new Exception("read /conf/JdbcMysqlBase/config-sharding.yaml failed.");
         }
     }
     
     private void createOpengaussDatasource() throws Exception{
         try {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/conf/JdbcOpengaussBase/config-sharding.yaml").getFile()));
-        } catch (IOException exception) {
-            logger.error("/conf/JdbcOpengaussBase/config-sharding.yaml not exist.");
-            throw new Exception("/conf/JdbcOpengaussBase/config-sharding.yaml not exist.");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            logger.error("read /conf/JdbcOpengaussBase/config-sharding.yaml failed.");
+            throw new Exception("read /conf/JdbcOpengaussBase/config-sharding.yaml failed.");
         }
     }
     
     private void createPostgresqlDatasource() throws Exception{
         try {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/conf/JdbcPostgresqlBase/config-sharding.yaml").getFile()));
-        } catch (IOException exception) {
-            logger.error("/conf/JdbcPostgresqlBase/config-sharding.yaml not exist.");
-            throw new Exception("/conf/JdbcPostgresqlBase/config-sharding.yaml not exist.");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            logger.error("read /conf/JdbcPostgresqlBase/config-sharding.yaml failed.");
+            throw new Exception("read /conf/JdbcPostgresqlBase/config-sharding.yaml failed.");
         }
-    }
-    
-    @Override
-    public void end() throws SQLException {
-        getCaseInfo().setStatus(true);
     }
 }

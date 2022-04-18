@@ -43,7 +43,11 @@ public class SetReadOnly extends BaseCaseImpl {
         step1();
         step2();
     }
-
+    
+    @Override
+    public void end() throws Exception {
+    }
+    
     private void step1() throws Exception {
         DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
         Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
