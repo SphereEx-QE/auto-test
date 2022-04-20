@@ -63,13 +63,13 @@ public class SetReadOnly extends BaseCaseImpl {
             int balance = rs.getInt("balance");
             if (id == 1) {
                 if (balance != 0) {
-                    logger.error("balance is %d, should be 0", balance);
+                    logger.error("balance is {}, should be 0", balance);
                     return false;
                 }
             }
             if (id == 2) {
                 if (balance != 100) {
-                    logger.error("balance is %d, should be 100", balance);
+                    logger.error("balance is {}, should be 100", balance);
                     return false;
                 }
             }
@@ -98,13 +98,13 @@ public class SetReadOnly extends BaseCaseImpl {
             int balance = rs.getInt("balance");
             if (id == 1) {
                 if (balance != 0) {
-                    logger.error("balance is %d, should be 0", balance);
+                    logger.error("balance is {}, should be 0", balance);
                     return false;
                 }
             }
             if (id == 2) {
                 if (balance != 100) {
-                    logger.error("balance is %d, should be 100", balance);
+                    logger.error("balance is {}, should be 100", balance);
                     return false;
                 }
             }

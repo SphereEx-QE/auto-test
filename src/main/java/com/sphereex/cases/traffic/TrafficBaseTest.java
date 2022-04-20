@@ -21,7 +21,7 @@ public abstract class TrafficBaseTest extends BaseCaseImpl {
         try {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/traffic/config-sharding.yaml").getFile()));
         } catch (Exception e) {
-            logger.error(" read /traffic/config-sharding.yaml failed.");
+            logger.error("read /traffic/config-sharding.yaml failed.");
             e.printStackTrace();
             throw new Exception("read /traffic/config-sharding.yaml failed.");
         }

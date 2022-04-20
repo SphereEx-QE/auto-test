@@ -113,7 +113,7 @@ public class MySQLSavepointTest extends BaseCaseImpl {
         }
         statement.close();
         if (rn != rowNum) {
-            logger.error("recode num assert error, expect:%d, actual:%d.", rowNum, rn);
+            logger.error("recode num assert error, expect:{}, actual:{}.", rowNum, rn);
             return false;
         }
         return true;

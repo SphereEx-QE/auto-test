@@ -50,13 +50,13 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
             String content = rs.getString("content");
             if (id == 2) {
                 if (!"test2".equals(content)) {
-                    logger.error("content is %s, should be test2", content);
+                    logger.error("content is {}, should be test2", content);
                     return false;
                 }
             }
             if (id == 1) {
                 if (!"test1".equals(content)) {
-                    logger.error("content is %s, should be test1", content);
+                    logger.error("content is {}, should be test1", content);
                     return false;
                 }
             }
@@ -84,13 +84,13 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
             String content = rs.getString("content");
             if (id == 2) {
                 if (!"test2".equals(content)) {
-                    logger.error("content is %s, should be test2", content);
+                    logger.error("content is {}, should be test2", content);
                     return false;
                 }
             }
             if (id == 1) {
                 if (!"test1".equals(content)) {
-                    logger.error("content is %s, should be test1", content);
+                    logger.error("content is {}, should be test1", content);
                     return false;
                 }
             }

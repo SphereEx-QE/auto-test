@@ -42,14 +42,14 @@ public class ClassicTransfer extends BaseCaseImpl {
             tasks.add(t);
             int sum = getBalanceSum();
             if (100 != sum) {
-                logger.error("balance sum is %d, should be 100", sum);
+                logger.error("balance sum is {}, should be 100", sum);
                 return false;
             }
         }
         Thread.sleep(3000);
         int sum = getBalanceSum();
         if (100 != sum) {
-            logger.error("balance sum is %d, should be 100", sum);
+            logger.error("balance sum is {}, should be 100", sum);
             return false;
         }
         for (Thread task: tasks) {

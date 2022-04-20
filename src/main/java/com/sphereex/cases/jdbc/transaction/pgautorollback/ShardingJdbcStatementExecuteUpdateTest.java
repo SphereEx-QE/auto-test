@@ -86,7 +86,7 @@ public class ShardingJdbcStatementExecuteUpdateTest extends ShardingJdbcBaseTest
         if (r.next()) {
             int balance = r.getInt("balance");
             if (1 != balance) {
-                logger.error("expect balance is 1, but balance:%d.", balance);
+                logger.error("expect balance is 1, but balance:{}.", balance);
                 return false;
             }
         } else {
@@ -123,7 +123,7 @@ public class ShardingJdbcStatementExecuteUpdateTest extends ShardingJdbcBaseTest
         if (r.next()) {
             int balance = r.getInt("balance");
             if (1 != balance) {
-                logger.error("expect balance is 1, but balance:%d.", balance);
+                logger.error("expect balance is 1, but balance:{}.", balance);
                 return false;
             }
         } else {
@@ -160,7 +160,7 @@ public class ShardingJdbcStatementExecuteUpdateTest extends ShardingJdbcBaseTest
         if (r.next()) {
             int balance = r.getInt("balance");
             if (1 != balance) {
-                logger.error("expect balance is 1, but balance:%d.", balance);
+                logger.error("expect balance is 1, but balance:{}.", balance);
                 return false;
             }
         } else {

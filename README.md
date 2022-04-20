@@ -35,7 +35,7 @@ usage: auto-test.sh [-h ip] [-P port] [-d dbname] [-u user] [-p password] [-f fe
 ### How to add case
 
 * create a class extend `BaseCaseImpl` in package `come.sphereex.cases`
-* add annotation `AutoTest` to class, please refer to `src/main/java/com/sphereex/cases/transaction/case1/Case1.java`
+* add annotation `AutoTest` to class, please refer to `src/main/java/com/sphereex/cases/Example.java`
 
 ### Realization principle
 
