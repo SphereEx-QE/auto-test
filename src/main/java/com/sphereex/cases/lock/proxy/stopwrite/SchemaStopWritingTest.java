@@ -31,63 +31,57 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 @AutoTest
 public class SchemaStopWritingTest extends BaseCaseImpl {
     
     private static final Logger logger = LoggerFactory.getLogger(SchemaStopWritingTest.class);
     
-    private Map<String, Connection> connections = new LinkedHashMap<>();
+    private static final Map<String, Connection> CONNECTIONS = new LinkedHashMap<>();
     
-    private int token;
+    static {
+        try {
+            CONNECTIONS.put("13306", MySQLUtil.getInstance().getConnection(new DBInfo("127.0.0.1", 13306, "root", "root", "")));
+            CONNECTIONS.put("3307", MySQLUtil.getInstance().getConnection(new DBInfo("127.0.0.1", 3307, "root", "root", "scaling_db")));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
     
     @Override
     public void pre() throws Exception {
-        connections.put("0", MySQLUtil.getInstance().getConnection(new DBInfo("127.0.0.1", 3307, "root", "root", "scaling_db")));
-        connections.put("1", MySQLUtil.getInstance().getConnection(new DBInfo("127.0.0.1", 3308, "root", "root", "scaling_db")));
-        
-        Statement stmt3307 = connections.get("0").createStatement();
-        Statement stmt3308 = connections.get("1").createStatement();
-        
-        // add resource
-        stmt3307.execute("ADD RESOURCE ds_0 (\n" +
-                "    URL=\"jdbc:mysql://127.0.0.1:13306/scaling_ds_0?serverTimezone=UTC&useSSL=false\",\n" +
-                "    USER=root,\n" +
-                "    PASSWORD=root,\n" +
-                "    PROPERTIES(\"maximumPoolSize\"=50,\"idleTimeout\"=\"60000\")\n" +
-                "), ds_1 (\n" +
-                "    URL=\"jdbc:mysql://127.0.0.1:13306/scaling_ds_1?serverTimezone=UTC&useSSL=false\",\n" +
-                "    USER=root,\n" +
-                "    PASSWORD=root,\n" +
-                "    PROPERTIES(\"maximumPoolSize\"=50,\"idleTimeout\"=\"60000\")\n" +
-                ")");
-        
-        // add rule
-        stmt3307.execute("CREATE SHARDING TABLE RULE t_order(\n" +
-                "RESOURCES(ds_0,ds_1),\n" +
-                "SHARDING_COLUMN=order_id,\n" +
-                "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
-                "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))\n" +
-                "), t_order_item(\n" +
-                "RESOURCES(ds_0,ds_1),\n" +
-                "SHARDING_COLUMN=order_id,\n" +
-                "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),\n" +
-                "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))\n" +
-                ")");
+        sourcePreProxy(CONNECTIONS.get("3307"));
+        targetPreMySQL(CONNECTIONS.get("13306"));
+        targetPreProxy(CONNECTIONS.get("3307"));
+    }
     
+    private void sourcePreProxy(final Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
+        // add rule
+        statement.execute("CREATE SHARDING TABLE RULE t_order(RESOURCES(ds_0,ds_1),SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))), " +
+                "t_order_item(RESOURCES(ds_0,ds_1),SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4)),KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake)))");
         // create table
-        stmt3307.execute("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
-        stmt3307.execute("CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id))");
-        
+        statement.execute("CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))");
+        statement.execute("CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id))");
         // add data
-        stmt3307.execute("insert into t_order (order_id, user_id, status) values (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok')");
-        stmt3307.execute("insert into t_order_item (item_id, order_id, user_id, status) values (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok')");
-        
-        stmt3308.execute("ADD RESOURCE ds_2 (\n" +
+        statement.execute("insert into t_order (order_id, user_id, status) values (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok')");
+        statement.execute("insert into t_order_item (item_id, order_id, user_id, status) values (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok')");
+    }
+    
+    private void targetPreMySQL(final Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.execute("drop database if exists scaling_ds_2");
+        statement.execute("create database scaling_ds_2 default charset utf8");
+        statement.execute("drop database if exists scaling_ds_3");
+        statement.execute("create database scaling_ds_3 default charset utf8");
+        statement.execute("drop database if exists scaling_ds_4");
+        statement.execute("create database scaling_ds_4 default charset utf8");
+    }
+    
+    private void targetPreProxy(final Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.execute("ADD RESOURCE ds_2 (\n" +
                 "    URL=\"jdbc:mysql://127.0.0.1:13306/scaling_ds_2?serverTimezone=UTC&useSSL=false\",\n" +
                 "    USER=root,\n" +
                 "    PASSWORD= root,\n" +
@@ -103,81 +97,37 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
                 "    PASSWORD= root,\n" +
                 "    PROPERTIES(\"maximumPoolSize\"=50,\"idleTimeout\"=\"60000\")\n" +
                 ")");
-    
-        stmt3307.execute("CREATE SHARDING SCALING RULE scaling_manual1 (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES(\"chunk-size\"=1000))))");
-        
-        stmt3307.execute("ALTER SHARDING TABLE RULE t_order(\n" +
-                "RESOURCES(ds_2,ds_3,ds_4),\n" +
-                "SHARDING_COLUMN=order_id,\n" +
-                "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=6)),\n" +
-                "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))\n" +
-                ")");
-        
+        statement.execute("CREATE SHARDING SCALING RULE scaling_manual1 (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES(\"chunk-size\"=1000))))");
+        statement.execute("ALTER SHARDING TABLE RULE t_order(RESOURCES(ds_2,ds_3,ds_4),SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=6)),KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake)))");
     }
     
     @Override
     public boolean run() throws Exception {
-        Statement stmt3307 = connections.get("proxy-3307").createStatement();
-        ResultSet resultSet = stmt3307.executeQuery("show scaling list");
+        Statement statement = CONNECTIONS.get("3307").createStatement();
+        ResultSet resultSet = statement.executeQuery("show scaling list");
         String jobId = "";
         while (resultSet.next()) {
             jobId = resultSet.getString("id");
         }
-        handleTest(10, 100, jobId);
-        return true;
+        return handleLockTest(jobId);
     }
     
-    @Override
-    public void end() throws Exception {
-        for (Connection each : connections.values()) {
-            each.close();
+    private boolean handleLockTest(final String jobId) {
+        tryLock(jobId);
+        if (!checkLock()) {
+            return false;
         }
+        unlock(jobId);
+        return !checkLock();
     }
     
-    private void handleTest(final int threadSize, final int loopSize, final String jobId) {
-        this.token = threadSize * loopSize;
-        List<Thread> threadList = new LinkedList<>();
-        Thread eachThread;
-        for (int i = 0; i < threadSize; i++) {
-            eachThread = new Thread(String.valueOf((Callable<String>) () -> {
-                for (int j = 0; j < 1000; j++) {
-                    checkLockStatus(jobId);
-                }
-                return "S";
-            }));
-            threadList.add(eachThread);
-        }
-        threadList.forEach(Thread::start);
-    }
-    
-    private void checkLockStatus(final String jobId) throws SQLException {
+    private boolean checkLock() {
         try {
-            lock(randomConnection(), jobId);
-            sellToken(randomConnection());
-        } finally {
-            unlock(randomConnection(), jobId);
-        }
-    }
-    
-    private Connection randomConnection() {
-        String key = (int) (Math.random() * connections.size()) + "";
-        return connections.get(key);
-    }
-    
-    private void sellToken(final Connection connection) throws SQLException {
-        if (isLocked(connection)) {
-            this.token--;
-            return;
-        }
-        throw new RuntimeException("lock error");
-    }
-    
-    private boolean isLocked(Connection connection) throws SQLException {
-        String sql = "update t_order set status = ? where order_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, "ok1");
-        preparedStatement.setInt(2, 4);
-        try {
+            Connection connection = CONNECTIONS.get("3307");
+            String sql = "update t_order set status = ? where order_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, "ok1");
+            preparedStatement.setInt(2, 4);
             preparedStatement.executeUpdate();
         } catch (final Exception ex) {
             return true;
@@ -185,20 +135,37 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         return false;
     }
     
-    private void lock(final Connection connection, final String jobId) throws SQLException {
-        boolean isLocKed;
+    private void tryLock(String jobId) {
+        boolean isLocked;
         do {
-            String sql = "STOP SCALING SOURCE WRITING " + jobId;
-            isLocKed = connection.createStatement().execute(sql);
-        } while (!isLocKed);
+            isLocked = lock(jobId);
+        } while (!isLocked);
     }
     
-    private void unlock(final Connection connection, final String jobId) throws SQLException {
-        boolean isReleased;
-        do {
+    private boolean lock(String jobId) {
+        try {
+            Connection connection = CONNECTIONS.get("3307");
+            String sql = "STOP SCALING SOURCE WRITING " + jobId;
+            connection.createStatement().executeQuery(sql);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    
+    private void unlock(final String jobId) {
+        try {
             String sql = "restore scaling source writing " + jobId;
-            isReleased = connection.createStatement().execute(sql);
-        } while (!isReleased);
+            CONNECTIONS.get("3307").createStatement().execute(sql);
+        } catch (Exception ex) {
+        }
+    }
+    
+    @Override
+    public void end() throws Exception {
+        for (Connection each : CONNECTIONS.values()) {
+            each.close();
+        }
     }
     
     @Override

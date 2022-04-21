@@ -26,7 +26,6 @@ public class MySQLUtil {
     }
 
     public Connection getConnection(DBInfo dbInfo) throws SQLException {
-        Connection conn = DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s?autoReconnect=true", dbInfo.getIp(), dbInfo.getPort(), dbInfo.getDbName()), dbInfo.getUser(), dbInfo.getPassword());
-        return conn;
+        return DriverManager.getConnection(String.format("jdbc:mysql://%s:%d/%s?serverTimezone=UTC&useSSL=false", dbInfo.getIp(), dbInfo.getPort(), dbInfo.getDbName()), dbInfo.getUser(), dbInfo.getPassword());
     }
 }
