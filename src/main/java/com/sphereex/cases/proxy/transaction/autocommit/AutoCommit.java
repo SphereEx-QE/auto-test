@@ -1,9 +1,9 @@
 package com.sphereex.cases.proxy.transaction.autocommit;
 
-import com.sphereex.cases.BaseCaseImpl;
+import com.sphereex.cases.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBInfo;
+import com.sphereex.core.DBType;
 import com.sphereex.utils.MySQLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,22 +12,24 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Objects;
 
 @AutoTest
-public class AutoCommit extends BaseCaseImpl {
-
+public final class AutoCommit extends ProxyBaseTest {
+    
     private Connection conn1;
 
     private Connection conn2;
 
     private  final Logger logger = LoggerFactory.getLogger(AutoCommit.class);
-
+    
+    public AutoCommit() {
+        super(DBType.MYSQL);
+    }
+    
     @Override
     public void pre() throws ClassNotFoundException, SQLException {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        conn1 = MySQLUtil.getInstance().getConnection(dbInfo);
-        conn2 = MySQLUtil.getInstance().getConnection(dbInfo);
+        conn1 = getAutodataSource().getConnection();
+        conn2 = getAutodataSource().getConnection();
     }
 
     @Override

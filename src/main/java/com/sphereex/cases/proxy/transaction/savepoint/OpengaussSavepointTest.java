@@ -1,10 +1,9 @@
 package com.sphereex.cases.proxy.transaction.savepoint;
 
-import com.sphereex.cases.BaseCaseImpl;
+import com.sphereex.cases.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBInfo;
-import com.sphereex.utils.OpenGaussUtil;
+import com.sphereex.core.DBType;
 import org.opengauss.jdbc.PSQLSavepoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,17 +12,19 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.util.Objects;
 
 @AutoTest
-public class OpengaussSavepointTest extends BaseCaseImpl {
+public final class OpengaussSavepointTest extends ProxyBaseTest {
     
     private static final Logger logger = LoggerFactory.getLogger(OpengaussSavepointTest.class);
     
+    public OpengaussSavepointTest() {
+        super(DBType.OPENGAUSS);
+    }
+    
     @Override
     public void pre() throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         Statement stmt;
         Statement stmt1;
         stmt = conn.createStatement();
@@ -51,8 +52,7 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
     }
     
     private boolean case1 () throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         conn.setAutoCommit(false);
         checkRowCount(conn, 0);
         if (!checkRowCount(conn, 0)) {
@@ -82,8 +82,7 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
     }
     
     private boolean case2() throws Exception{
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         conn.setAutoCommit(false);
         if (!checkRowCount(conn, 1)) {
             return false;
@@ -127,8 +126,7 @@ public class OpengaussSavepointTest extends BaseCaseImpl {
     }
     
     private boolean case3() throws Exception{
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = OpenGaussUtil.getInstance().getConnnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         try {
             conn.setSavepoint("point");
             logger.error("expect exception, but no exception report");

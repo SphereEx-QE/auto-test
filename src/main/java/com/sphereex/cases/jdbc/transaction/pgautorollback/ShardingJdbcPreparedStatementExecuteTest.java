@@ -3,6 +3,7 @@ package com.sphereex.cases.jdbc.transaction.pgautorollback;
 import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import com.sphereex.core.DBType;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,18 +15,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @AutoTest
-public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTest {
+public final class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTest {
     
     private final Logger logger = LoggerFactory.getLogger(ShardingJdbcPreparedStatementExecuteTest.class);
     
-    public ShardingJdbcPreparedStatementExecuteTest() {
-        super("opengauss");
+    public ShardingJdbcPreparedStatementExecuteTest() throws Exception {
+        super(DBType.OPENGAUSS);
     }
     
     @Override
     public void pre() throws Exception {
-        super.pre();
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         Statement dropTable = conn.createStatement();
         dropTable.execute("drop table if exists account;");
         Statement createTable = conn.createStatement();
@@ -37,7 +37,7 @@ public class ShardingJdbcPreparedStatementExecuteTest extends ShardingJdbcBaseTe
     
     @Override
     public boolean run() throws SQLException {
-        ShardingSphereConnection conn = (ShardingSphereConnection) getDataSource().getConnection();
+        ShardingSphereConnection conn = (ShardingSphereConnection) getAutoDataSource().getConnection();
         conn.setAutoCommit(false);
         if (conn.getConnectionManager().getConnectionTransaction().isRollbackOnly()) {
             logger.error("expect transaction is not rollback only, but transaction rollback only.");

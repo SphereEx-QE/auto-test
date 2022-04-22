@@ -7,7 +7,7 @@ import lombok.Setter;
 // Case meta data
 @Getter
 @RequiredArgsConstructor
-public class CaseInfo {
+public final class CaseInfo {
 
     private final String name;
 

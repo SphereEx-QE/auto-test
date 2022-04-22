@@ -1,13 +1,13 @@
 package com.sphereex.cases.proxy.transaction.classictransfer;
 
-import com.sphereex.cases.BaseCaseImpl;
+import com.sphereex.cases.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import com.sphereex.core.DBType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,17 +15,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 @AutoTest
-public class ClassicTransfer extends BaseCaseImpl {
+public final class ClassicTransfer extends ProxyBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassicTransfer.class);
 
-    private String jUrl;
-
+    public ClassicTransfer() {
+        super(DBType.OPENGAUSS);
+    }
+    
     @Override
     public void pre() throws Exception {
-        jUrl = String.format("jdbc:opengauss://%s:%d/%s", getDbInfo().getIp(), getDbInfo().getPort(), getDbInfo().getDbName());
         Statement stmt;
-        Connection conn = DriverManager.getConnection(jUrl, getDbInfo().getUser(), getDbInfo().getPassword());
+        Connection conn = getAutodataSource().getConnection();
         stmt = conn.createStatement();
         stmt.executeUpdate("drop table if exists account;create table account(id text , balance float ,transaction_id int);");
         stmt.executeUpdate("insert into account(transaction_id,balance) values (1,0),(2,100);");
@@ -59,11 +60,6 @@ public class ClassicTransfer extends BaseCaseImpl {
     }
     
     @Override
-    public void end() throws Exception {
-    
-    }
-    
-    @Override
     public void initCaseInfo() {
         String name = "ClassicTransfer";
         String feature = "proxy-transaction";
@@ -77,7 +73,7 @@ public class ClassicTransfer extends BaseCaseImpl {
     
     int getBalanceSum() throws Exception{
         int result = 0;
-        Connection connection = DriverManager.getConnection(jUrl, getDbInfo().getUser(), getDbInfo().getPassword());
+        Connection connection = getAutodataSource().getConnection();
 
         connection.setAutoCommit(false);
         Statement statement = connection.createStatement();
@@ -97,7 +93,7 @@ public class ClassicTransfer extends BaseCaseImpl {
              Statement statement1 = null;
              Statement statement2 = null;
             try {
-                connection = DriverManager.getConnection(jUrl, getDbInfo().getUser(), getDbInfo().getPassword());
+                connection = getAutodataSource().getConnection();
                 connection.setAutoCommit(false);
                 statement1 = connection.createStatement();
                 statement1.execute("update account set balance=balance-1 where transaction_id=2;");

@@ -1,10 +1,9 @@
 package com.sphereex.cases.proxy.transaction.savepoint;
 
-import com.sphereex.cases.BaseCaseImpl;
+import com.sphereex.cases.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBInfo;
-import com.sphereex.utils.MySQLUtil;
+import com.sphereex.core.DBType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,17 +11,19 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.util.Objects;
 
 @AutoTest
-public class MySQLSavepointTest extends BaseCaseImpl {
+public final class MySQLSavepointTest extends ProxyBaseTest {
     
     private static final Logger logger = LoggerFactory.getLogger(MySQLSavepointTest.class);
     
+    public MySQLSavepointTest() {
+        super(DBType.MYSQL);
+    }
+    
     @Override
     public void pre() throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         Statement stmt;
         Statement stmt1;
         stmt = conn.createStatement();
@@ -45,8 +46,7 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     }
     
     private boolean case1() throws Exception{
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         conn.setAutoCommit(false);
         if (!checkRowCount(conn, 0)) {
             return false;
@@ -75,8 +75,7 @@ public class MySQLSavepointTest extends BaseCaseImpl {
     }
     
     private boolean case2() throws Exception{
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         conn.setAutoCommit(false);
         if (!checkRowCount(conn, 1)) {
             return false;
@@ -117,10 +116,6 @@ public class MySQLSavepointTest extends BaseCaseImpl {
             return false;
         }
         return true;
-    }
-    
-    @Override
-    public void end() throws Exception {
     }
     
     @Override

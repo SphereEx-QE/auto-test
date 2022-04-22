@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class PostgreSQLUtil {
+public final class PostgreSQLUtil {
 
     private volatile static PostgreSQLUtil instance;
 

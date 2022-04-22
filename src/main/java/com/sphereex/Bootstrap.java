@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class Bootstrap {
+public final class Bootstrap {
     private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
     private static final String packageName = "com.sphereex.cases";
     private static final List<File> files = new ArrayList<>();

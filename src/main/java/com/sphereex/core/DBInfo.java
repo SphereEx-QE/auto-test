@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class DBInfo {
+public final class DBInfo {
 
     private final String ip;
 

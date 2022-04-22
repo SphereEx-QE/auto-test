@@ -11,14 +11,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @AutoTest
-public class TrafficOpengaussAutocommit extends TrafficBaseTest {
+public final class TrafficOpengaussAutocommit extends TrafficBaseTest {
 
     private  final Logger logger = LoggerFactory.getLogger(TrafficOpengaussAutocommit.class);
-
+    
+    public TrafficOpengaussAutocommit() throws Exception {
+        super();
+    }
+    
     @Override
     public void pre() throws Exception {
-        super.pre();
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         Statement stmt;
         stmt = conn.createStatement();
         stmt.executeUpdate("delete from t_order;");
@@ -28,8 +31,8 @@ public class TrafficOpengaussAutocommit extends TrafficBaseTest {
 
     @Override
     public boolean run() throws SQLException {
-        Connection conn1 = getDataSource().getConnection();
-        Connection conn2 = getDataSource().getConnection();
+        Connection conn1 = getAutoDataSource().getConnection();
+        Connection conn2 = getAutoDataSource().getConnection();
         
         Statement stmt1 = conn1.createStatement();
         stmt1.execute("set transaction isolation level read committed;");
@@ -69,10 +72,9 @@ public class TrafficOpengaussAutocommit extends TrafficBaseTest {
 
     @Override
     public void end() throws SQLException {
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         conn.createStatement().execute("delete from t_order");
         conn.close();
-        getCaseInfo().setStatus(true);
     }
     
     @Override

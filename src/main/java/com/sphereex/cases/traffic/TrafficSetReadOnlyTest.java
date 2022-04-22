@@ -11,14 +11,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @AutoTest
-public class TrafficSetReadOnlyTest extends TrafficBaseTest {
+public final class TrafficSetReadOnlyTest extends TrafficBaseTest {
     
     private  final Logger logger = LoggerFactory.getLogger(TrafficSetReadOnlyTest.class);
     
+    public TrafficSetReadOnlyTest() throws Exception {
+        super();
+    }
+    
     @Override
     public void pre() throws Exception {
-        super.pre();
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         Statement stmt;
         Statement stmt1;
         stmt = conn.createStatement();
@@ -41,7 +44,7 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
     }
     
     private boolean step1() throws Exception {
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         conn.setReadOnly(true);
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from t_order;");
@@ -76,7 +79,7 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
     }
     
     private boolean step2() throws Exception {
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from t_order");
         while (rs.next()) {
@@ -114,7 +117,7 @@ public class TrafficSetReadOnlyTest extends TrafficBaseTest {
     
     @Override
     public void end() throws SQLException {
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         Statement statement = conn.createStatement();
         statement.executeUpdate("delete from t_order;");
         statement.close();

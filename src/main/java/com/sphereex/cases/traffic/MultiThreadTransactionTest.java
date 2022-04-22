@@ -16,17 +16,27 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 @AutoTest
-public class MultiThreadTransactionTest extends TrafficBaseTest {
+public final class MultiThreadTransactionTest extends TrafficBaseTest {
     private final Logger logger = LoggerFactory.getLogger(MultiThreadTransactionTest.class);
     
     private final List<Connection> connections = new LinkedList<>();
     
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
     
+    public MultiThreadTransactionTest() throws Exception {
+        super();
+    }
+    
+    
+    @Override
+    public void pre() throws Exception {
+    
+    }
+    
     @Override
     public boolean run() throws Exception {
         for (int i = 0; i < 10; i++) {
-            Connection connection = getDataSource().getConnection();
+            Connection connection = getAutoDataSource().getConnection();
             connection.setAutoCommit(false);
             connections.add(connection);
         }

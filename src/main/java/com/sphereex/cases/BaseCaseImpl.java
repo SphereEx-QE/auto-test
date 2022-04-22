@@ -13,7 +13,7 @@ public abstract class BaseCaseImpl implements Case {
     private CaseInfo caseInfo;
 
     private DBInfo dbInfo;
-  
+    
     @Override
     public boolean start() throws Exception {
         boolean r;

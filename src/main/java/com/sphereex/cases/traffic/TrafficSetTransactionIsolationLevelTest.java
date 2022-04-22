@@ -11,14 +11,23 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @AutoTest
-public class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
+public final class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTest {
     
-    private  final Logger logger = LoggerFactory.getLogger(TrafficSetTransactionIsolationLevelTest.class);
+    private final Logger logger = LoggerFactory.getLogger(TrafficSetTransactionIsolationLevelTest.class);
+    
+    public TrafficSetTransactionIsolationLevelTest() throws Exception {
+        super();
+    }
+    
+    @Override
+    public void pre() throws Exception {
+    
+    }
     
     @Override
     public boolean run() throws SQLException {
-        Connection conn1 = getDataSource().getConnection();
-        Connection conn2 = getDataSource().getConnection();
+        Connection conn1 = getAutoDataSource().getConnection();
+        Connection conn2 = getAutoDataSource().getConnection();
         Statement stmt1 = conn1.createStatement();
         stmt1.execute("set transaction isolation level read committed;");
         

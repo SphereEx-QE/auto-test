@@ -2,12 +2,13 @@ package com.sphereex.cases.jdbc.transaction.savepoint;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import com.sphereex.core.DBType;
 
 @AutoTest
 public final class ShardingJdbcMySQLSavepointTest extends ShardingJdbcSavepointTest {
     
-    public ShardingJdbcMySQLSavepointTest() {
-        super("mysql");
+    public ShardingJdbcMySQLSavepointTest() throws Exception {
+        super(DBType.MYSQL);
     }
     
     @Override

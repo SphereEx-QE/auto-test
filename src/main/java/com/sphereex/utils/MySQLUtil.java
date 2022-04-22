@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class MySQLUtil {
+public final class MySQLUtil {
 
     private volatile static MySQLUtil instance;
 

@@ -6,7 +6,7 @@ import com.sphereex.core.DBType;
 import com.sphereex.utils.SqlFileExecUtils;
 
 @AutoTest
-public class Example extends BaseCaseImpl{
+public final class Example extends BaseCaseImpl{
     @Override
     public void pre() throws Exception {
         SqlFileExecUtils.executeSqlFile(Example.class.getResource("/example.sql").getFile(), getDbInfo(), DBType.MYSQL);

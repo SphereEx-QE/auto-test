@@ -1,10 +1,9 @@
 package com.sphereex.cases.proxy.transaction.readonly;
 
-import com.sphereex.cases.BaseCaseImpl;
+import com.sphereex.cases.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBInfo;
-import com.sphereex.utils.MySQLUtil;
+import com.sphereex.core.DBType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,17 +11,19 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Objects;
 
 @AutoTest
-public class SetReadOnly extends BaseCaseImpl {
+public final class SetReadOnly extends ProxyBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SetReadOnly.class);
-
+    
+    public SetReadOnly() {
+        super(DBType.MYSQL);
+    }
+    
     @Override
     public void pre() throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         Statement stmt;
         Statement stmt1;
         Statement stmt2;
@@ -48,13 +49,8 @@ public class SetReadOnly extends BaseCaseImpl {
         return true;
     }
     
-    @Override
-    public void end() throws Exception {
-    }
-    
     private boolean step1() throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         conn.setReadOnly(true);
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from account;");
@@ -89,8 +85,7 @@ public class SetReadOnly extends BaseCaseImpl {
     }
 
     private boolean step2() throws Exception {
-        DBInfo dbInfo = Objects.requireNonNull(getDbInfo());
-        Connection conn = MySQLUtil.getInstance().getConnection(dbInfo);
+        Connection conn = getAutodataSource().getConnection();
         Statement statement1 = conn.createStatement();
         ResultSet rs = statement1.executeQuery("select * from account");
         while (rs.next()) {

@@ -2,12 +2,13 @@ package com.sphereex.cases.jdbc.transaction.savepoint;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import com.sphereex.core.DBType;
 
 @AutoTest
-public class ShardingJdbcPostgresqlSavepointTest extends ShardingJdbcSavepointTest {
+public final class ShardingJdbcPostgresqlSavepointTest extends ShardingJdbcSavepointTest {
     
-    public ShardingJdbcPostgresqlSavepointTest() {
-        super("postgresql");
+    public ShardingJdbcPostgresqlSavepointTest() throws Exception {
+        super(DBType.POSTGRESQL);
     }
     
     @Override

@@ -2,12 +2,13 @@ package com.sphereex.cases.jdbc.transaction.savepoint;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import com.sphereex.core.DBType;
 
 @AutoTest
-public class ShardingJdbcOpengaussSavepointTest extends ShardingJdbcSavepointTest {
+public final class ShardingJdbcOpengaussSavepointTest extends ShardingJdbcSavepointTest {
     
-    public ShardingJdbcOpengaussSavepointTest() {
-        super("opengauss");
+    public ShardingJdbcOpengaussSavepointTest() throws Exception {
+        super(DBType.OPENGAUSS);
     }
     
     @Override

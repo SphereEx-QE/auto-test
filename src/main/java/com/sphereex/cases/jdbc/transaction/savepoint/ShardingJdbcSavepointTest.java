@@ -1,8 +1,8 @@
 package com.sphereex.cases.jdbc.transaction.savepoint;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
-import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import com.sphereex.core.DBType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,13 +15,13 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
     
     private static final Logger logger = LoggerFactory.getLogger(ShardingJdbcSavepointTest.class);
     
-    public ShardingJdbcSavepointTest(String dbType) {
+    public ShardingJdbcSavepointTest(DBType dbType) throws Exception {
         super(dbType);
     }
 
     @Override
     public void pre() throws Exception {
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         Statement dropTable = conn.createStatement();
         dropTable.execute("drop table if exists account;");
         Statement createTable = conn.createStatement();
@@ -68,7 +68,7 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
     }
     
     private boolean case1() throws Exception{
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         conn.setAutoCommit(false);
         Statement std1 = conn.createStatement();
         std1.execute("insert into account(id, balance, transaction_id) values(1,1,1);");
@@ -91,7 +91,7 @@ public class ShardingJdbcSavepointTest extends ShardingJdbcBaseTest {
     }
 
     private boolean case2() throws Exception{
-        Connection conn = getDataSource().getConnection();
+        Connection conn = getAutoDataSource().getConnection();
         conn.setAutoCommit(false);
         Statement std1 = conn.createStatement();
         std1.execute("insert into account(id, balance, transaction_id) values(2,2,2);");
