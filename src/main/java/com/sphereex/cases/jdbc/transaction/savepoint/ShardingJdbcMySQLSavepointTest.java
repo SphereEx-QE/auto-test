@@ -3,16 +3,19 @@ package com.sphereex.cases.jdbc.transaction.savepoint;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBType;
+import lombok.Getter;
 
 @AutoTest
 public final class ShardingJdbcMySQLSavepointTest extends ShardingJdbcSavepointTest {
     
-    public ShardingJdbcMySQLSavepointTest() throws Exception {
-        super(DBType.MYSQL);
-    }
+    @Getter
+    private final DBType dbType = DBType.MYSQL;
+    
+    @Getter
+    private final String yamlFile = null;
     
     @Override
-    public void initCaseInfo() {
+    public void initCase() {
         String name = "ShardingJdbcMySQLSavepointTest";
         String feature = "jdbc-transaction";
         String tag = "savepoint";

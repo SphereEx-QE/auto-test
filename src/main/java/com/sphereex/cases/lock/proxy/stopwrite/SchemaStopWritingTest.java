@@ -21,6 +21,7 @@ import com.sphereex.cases.BaseCaseImpl;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBInfo;
+import com.sphereex.core.Status;
 import com.sphereex.utils.MySQLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +36,11 @@ import java.util.Map;
 
 @AutoTest
 public class SchemaStopWritingTest extends BaseCaseImpl {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SchemaStopWritingTest.class);
-    
+
     private static final Map<String, Connection> CONNECTIONS = new LinkedHashMap<>();
-    
+
     static {
         try {
             CONNECTIONS.put("13306", MySQLUtil.getInstance().getConnection(new DBInfo("127.0.0.1", 13306, "root", "root", "")));
@@ -48,14 +49,21 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
             ex.printStackTrace();
         }
     }
-    
+
     @Override
-    public void pre() throws Exception {
-        sourcePreProxy(CONNECTIONS.get("3307"));
-        targetPreMySQL(CONNECTIONS.get("13306"));
-        targetPreProxy(CONNECTIONS.get("3307"));
+    public Status pre() {
+        try {
+            sourcePreProxy(CONNECTIONS.get("3307"));
+            targetPreMySQL(CONNECTIONS.get("13306"));
+            targetPreProxy(CONNECTIONS.get("3307"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
+        
     }
-    
+
     private void sourcePreProxy(final Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
         // add rule
@@ -68,7 +76,7 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         statement.execute("insert into t_order (order_id, user_id, status) values (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok')");
         statement.execute("insert into t_order_item (item_id, order_id, user_id, status) values (1,1,2,'ok'),(2,2,4,'ok'),(3,3,6,'ok'),(4,4,1,'ok'),(5,5,3,'ok'),(6,6,5,'ok')");
     }
-    
+
     private void targetPreMySQL(final Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
         statement.execute("drop database if exists scaling_ds_2");
@@ -78,7 +86,7 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         statement.execute("drop database if exists scaling_ds_4");
         statement.execute("create database scaling_ds_4 default charset utf8");
     }
-    
+
     private void targetPreProxy(final Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
         statement.execute("ADD RESOURCE ds_2 (\n" +
@@ -100,18 +108,24 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         statement.execute("CREATE SHARDING SCALING RULE scaling_manual1 (DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES(\"chunk-size\"=1000))))");
         statement.execute("ALTER SHARDING TABLE RULE t_order(RESOURCES(ds_2,ds_3,ds_4),SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=6)),KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake)))");
     }
-    
+
     @Override
-    public boolean run() throws Exception {
-        Statement statement = CONNECTIONS.get("3307").createStatement();
-        ResultSet resultSet = statement.executeQuery("show scaling list");
-        String jobId = "";
-        while (resultSet.next()) {
-            jobId = resultSet.getString("id");
+    public Status run() {
+        try {
+            Statement statement = CONNECTIONS.get("3307").createStatement();
+            ResultSet resultSet = statement.executeQuery("show scaling list");
+            String jobId = "";
+            while (resultSet.next()) {
+                jobId = resultSet.getString("id");
+            }
+            boolean r =  handleLockTest(jobId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
         }
-        return handleLockTest(jobId);
+        return new Status(true, "");
     }
-    
+
     private boolean handleLockTest(final String jobId) {
         tryLock(jobId);
         if (!checkLock()) {
@@ -120,7 +134,7 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         unlock(jobId);
         return !checkLock();
     }
-    
+
     private boolean checkLock() {
         try {
             Connection connection = CONNECTIONS.get("3307");
@@ -134,14 +148,14 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         }
         return false;
     }
-    
+
     private void tryLock(String jobId) {
         boolean isLocked;
         do {
             isLocked = lock(jobId);
         } while (!isLocked);
     }
-    
+
     private boolean lock(String jobId) {
         try {
             Connection connection = CONNECTIONS.get("3307");
@@ -152,7 +166,7 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
             return false;
         }
     }
-    
+
     private void unlock(final String jobId) {
         try {
             String sql = "restore scaling source writing " + jobId;
@@ -160,16 +174,23 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
         } catch (Exception ex) {
         }
     }
-    
+
     @Override
-    public void end() throws Exception {
-        for (Connection each : CONNECTIONS.values()) {
-            each.close();
+    public Status end() {
+        try {
+            for (Connection each : CONNECTIONS.values()) {
+                each.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
         }
+        return new Status(true, "");
+        
     }
-    
+
     @Override
-    public void initCaseInfo() {
+    public void initCase() {
         String name = "stop-writing-for-schema";
         String feature = "proxy-lock";
         String tag = "MySQL";

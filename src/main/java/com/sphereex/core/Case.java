@@ -1,19 +1,17 @@
 package com.sphereex.core;
 
 public interface Case {
-    void pre() throws Exception;
+    Status pre();
 
-    boolean run() throws Exception;
+    Status run();
 
-    void end() throws Exception;
+    Status end();
 
-    boolean start() throws Exception;
+    Status start();
     
-    void initCaseInfo();
+    void initCase();
     
-    boolean caseInfoIsNull();
+    boolean isValid();
 
     CaseInfo getCaseInfo();
-
-    void setDbInfo(DBInfo dbInfo);
 }

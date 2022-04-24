@@ -4,6 +4,8 @@ import com.sphereex.cases.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBType;
+import com.sphereex.core.Status;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,26 +18,43 @@ import java.util.List;
 
 @AutoTest
 public final class ClassicTransfer extends ProxyBaseTest {
+    
+    @Getter
+    private final DBType dbType = DBType.OPENGAUSS;
 
     private static final Logger logger = LoggerFactory.getLogger(ClassicTransfer.class);
 
-    public ClassicTransfer() {
-        super(DBType.OPENGAUSS);
-    }
-    
     @Override
-    public void pre() throws Exception {
-        Statement stmt;
-        Connection conn = getAutodataSource().getConnection();
-        stmt = conn.createStatement();
-        stmt.executeUpdate("drop table if exists account;create table account(id text , balance float ,transaction_id int);");
-        stmt.executeUpdate("insert into account(transaction_id,balance) values (1,0),(2,100);");
-        stmt.close();
-        conn.close();
+    public Status pre() {
+        Status s = super.pre();
+        if (!s.isSuccess()) {
+            return s;
+        }
+        try {
+            Statement stmt;
+            Connection conn = getAutoDataSource().getConnection();
+            stmt = conn.createStatement();
+            stmt.executeUpdate("drop table if exists account;create table account(id text , balance float ,transaction_id int);");
+            stmt.executeUpdate("insert into account(transaction_id,balance) values (1,0),(2,100);");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
     }
 
     @Override
-    public boolean run() throws Exception {
+    public Status run() {
+        try {
+            innerRun();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
+    }
+    
+    private void innerRun() throws Exception {
         List<Thread> tasks = new LinkedList<>();
         for (int i=0; i<20;i++) {
             Thread t = new UpdateTread();
@@ -44,23 +63,23 @@ public final class ClassicTransfer extends ProxyBaseTest {
             int sum = getBalanceSum();
             if (100 != sum) {
                 logger.error("balance sum is {}, should be 100", sum);
-                return false;
+                throw new Exception(String.format("balance sum is {}, should be 100", sum));
             }
         }
         Thread.sleep(3000);
         int sum = getBalanceSum();
         if (100 != sum) {
+            
             logger.error("balance sum is {}, should be 100", sum);
-            return false;
+            throw new Exception(String.format("balance sum is {}, should be 100", sum));
         }
         for (Thread task: tasks) {
             task.join();
         }
-        return true;
     }
     
     @Override
-    public void initCaseInfo() {
+    public void initCase() {
         String name = "ClassicTransfer";
         String feature = "proxy-transaction";
         String tag = "OpenGauss";
@@ -69,11 +88,12 @@ public final class ClassicTransfer extends ProxyBaseTest {
                 "2. Randomly query the sum of balance to verify whether the data is consistent";
         CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
         setCaseInfo(caseInfo);
+        super.initCase();
     }
     
     int getBalanceSum() throws Exception{
         int result = 0;
-        Connection connection = getAutodataSource().getConnection();
+        Connection connection = getAutoDataSource().getConnection();
 
         connection.setAutoCommit(false);
         Statement statement = connection.createStatement();
@@ -93,7 +113,7 @@ public final class ClassicTransfer extends ProxyBaseTest {
              Statement statement1 = null;
              Statement statement2 = null;
             try {
-                connection = getAutodataSource().getConnection();
+                connection = getAutoDataSource().getConnection();
                 connection.setAutoCommit(false);
                 statement1 = connection.createStatement();
                 statement1.execute("update account set balance=balance-1 where transaction_id=2;");

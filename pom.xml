@@ -12,6 +12,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <narayana.version>5.9.1.Final</narayana.version>
+        <ShardingSphere.version>5.1.1</ShardingSphere.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
     </properties>
@@ -57,7 +58,7 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
-            <version>5.1.1-SNAPSHOT</version>
+            <version>${ShardingSphere.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -68,12 +69,12 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-xa-core</artifactId>
-            <version>5.1.1-SNAPSHOT</version>
+            <version>${ShardingSphere.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
-            <version>5.1.1-SNAPSHOT</version>
+            <version>${ShardingSphere.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jta</groupId>

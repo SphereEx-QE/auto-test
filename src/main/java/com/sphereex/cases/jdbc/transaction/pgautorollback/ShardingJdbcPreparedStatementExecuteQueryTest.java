@@ -4,6 +4,8 @@ import com.sphereex.cases.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBType;
+import com.sphereex.core.Status;
+import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,31 +19,52 @@ import java.sql.Statement;
 @AutoTest
 public final class ShardingJdbcPreparedStatementExecuteQueryTest extends ShardingJdbcBaseTest {
     
+    @Getter
+    private final DBType dbType = DBType.OPENGAUSS;
+    
+    @Getter
+    private final String yamlFile = null;
+    
     private  final Logger logger = LoggerFactory.getLogger(ShardingJdbcPreparedStatementExecuteQueryTest.class);
     
-    public ShardingJdbcPreparedStatementExecuteQueryTest() throws Exception {
-        super(DBType.OPENGAUSS);
+    @Override
+    public Status pre() {
+        Status s = super.pre();
+        if (!s.isSuccess()) {
+            return s;
+        }
+        try {
+            Connection conn = getAutoDataSource().getConnection();
+            Statement dropTable = conn.createStatement();
+            dropTable.execute("drop table if exists account;");
+            Statement createTable = conn.createStatement();
+            createTable.execute("create table account(id int, balance float ,transaction_id int);");
+            Statement statement = conn.createStatement();
+            statement.execute("insert into account(id, balance, transaction_id) values(1,1,1);");
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
     }
     
     @Override
-    public void pre() throws Exception {
-        Connection conn = getAutoDataSource().getConnection();
-        Statement dropTable = conn.createStatement();
-        dropTable.execute("drop table if exists account;");
-        Statement createTable = conn.createStatement();
-        createTable.execute("create table account(id int, balance float ,transaction_id int);");
-        Statement statement = conn.createStatement();
-        statement.execute("insert into account(id, balance, transaction_id) values(1,1,1);");
-        conn.close();
+    public Status run() {
+        try {
+            innerRun();
+        } catch (SQLException e) {
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
     }
     
-    @Override
-    public boolean run() throws SQLException {
+    private void innerRun() throws SQLException {
         ShardingSphereConnection conn = (ShardingSphereConnection) getAutoDataSource().getConnection();
         conn.setAutoCommit(false);
         if (conn.getConnectionManager().getConnectionTransaction().isRollbackOnly()) {
             logger.error("expect transaction is not rollback only, but transaction rollback only.");
-            return false;
+            throw new SQLException("expect transaction is not rollback only, but transaction rollback only.");
         }
         Statement statement2 = conn.createStatement();
         PreparedStatement statement3 = conn.prepareStatement("select * from account1 where id=?");
@@ -53,7 +76,7 @@ public final class ShardingJdbcPreparedStatementExecuteQueryTest extends Shardin
         } catch (SQLException ex) {
             if (!conn.getConnectionManager().getConnectionTransaction().isRollbackOnly()) {
                 logger.error("expect transaction rollback only, but not.");
-                return false;
+                throw new SQLException("expect transaction rollback only, but not.");
             }
         }
         conn.commit();
@@ -63,22 +86,16 @@ public final class ShardingJdbcPreparedStatementExecuteQueryTest extends Shardin
             int balance = r.getInt("balance");
             if (1 != balance) {
                 logger.error("expect balance is 1, but balance:{}.", balance);
-                return false;
+                throw new SQLException(String.format("expect balance is 1, but balance:{}.", balance));
             }
         } else {
             logger.error("expect one recode, but not.");
-            return false;
+            throw new SQLException("expect one recode, but not.");
         }
-        return true;
     }
     
     @Override
-    public void end() throws Exception {
-    
-    }
-    
-    @Override
-    public void initCaseInfo() {
+    public void initCase() {
         String name = "ShardingJdbcPreparedStatementExecuteQueryTest";
         String feature = "jdbc-transaction";
         String tag = "pg-og-auto-rollback";

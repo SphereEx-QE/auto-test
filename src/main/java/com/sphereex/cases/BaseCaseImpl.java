@@ -2,7 +2,7 @@ package com.sphereex.cases;
 
 import com.sphereex.core.Case;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBInfo;
+import com.sphereex.core.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,28 +12,28 @@ public abstract class BaseCaseImpl implements Case {
 
     private CaseInfo caseInfo;
 
-    private DBInfo dbInfo;
-    
     @Override
-    public boolean start() throws Exception {
-        boolean r;
-        try {
-            pre();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    public Status start() {
+        Status preStatus = pre();
+        if (!preStatus.isSuccess()) {
+            return preStatus;
         }
-        r = run();
-        try {
-            end();
-        } catch (Exception e) {
-            e.printStackTrace();
+        Status runStatus = run();
+    
+        if (!runStatus.isSuccess()) {
+            return runStatus;
         }
-        return r;
+    
+        Status endStatus = end();
+    
+        if (!endStatus.isSuccess()) {
+            return endStatus;
+        }
+        return new Status(true, "");
     }
     
     @Override
-    public boolean caseInfoIsNull() {
-        return null == caseInfo;
+    public boolean isValid() {
+        return null != caseInfo;
     }
 }

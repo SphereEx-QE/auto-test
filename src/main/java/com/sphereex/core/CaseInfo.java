@@ -19,8 +19,4 @@ public final class CaseInfo {
 
 //    describe of case
     private final String message;
-
-//    case status
-    @Setter
-    private boolean status = false;
 }

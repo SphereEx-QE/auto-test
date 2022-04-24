@@ -2,7 +2,7 @@ package com.sphereex;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.Case;
-import com.sphereex.core.DBInfo;
+import com.sphereex.core.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,6 @@ public final class Bootstrap {
     private static final List<String> needRunCaseNames = new LinkedList<>();
     private static int successNum = 0;
     private static int failedNum = 0;
-    private static DBInfo dbInfo;
     public static void main(String[] args) throws Exception {
         parseArgs(args);
         caseScanner();
@@ -48,16 +47,8 @@ public final class Bootstrap {
         if (args.length == 1) {
             Collections.addAll(needRunCaseNames, args[0].split(","));
         }
-        String ip = System.getProperty("ip");
-        String port = System.getProperty("port");
-        String dbName = System.getProperty("dbname");
-        String user = System.getProperty("user");
-        String password = System.getProperty("password");
         String feature = System.getProperty("feature");
         String tag = System.getProperty("tag");
-        if (null != ip && null != port && null != dbName && null != user && null != password) {
-            dbInfo = new DBInfo(ip, Integer.parseInt(port), user, password, dbName);
-        }
         if (null != feature) {
             Collections.addAll(features, feature.split(","));
         }
@@ -68,18 +59,18 @@ public final class Bootstrap {
 
     static void run() {
         for (Case c : needRunCases) {
+            Status status = null;
             try {
-                boolean r = c.start();
-                c.getCaseInfo().setStatus(r);
+                status = c.start();
             } catch (Exception e) {
                 logger.info(String.format("case %s throw exception", c.getCaseInfo().getName()));
                 e.printStackTrace();
             }
-            if (!c.getCaseInfo().isStatus()) {
-                failedNum += 1;
-                System.out.printf("case: %s, status: %b%n", c.getCaseInfo().getName(), c.getCaseInfo().isStatus());
-            } else {
+            if (null != status && status.isSuccess()) {
                 successNum += 1;
+            } else {
+                failedNum += 1;
+                System.out.printf("case: %s, status: %b%n", c.getCaseInfo().getName(), "failed");
             }
         }
     }
@@ -111,6 +102,7 @@ public final class Bootstrap {
     public static void selectRunCases() throws Exception {
         for (Class clazz : cases) {
             Case c = (Case) clazz.newInstance();
+            c.initCase();
             if (!features.isEmpty() && !features.contains(c.getCaseInfo().getFeature())) {
                 continue;
             }
@@ -120,10 +112,8 @@ public final class Bootstrap {
             if (!needRunCaseNames.isEmpty() && !needRunCaseNames.contains(c.getCaseInfo().getName())) {
                 continue;
             }
-            c.setDbInfo(dbInfo);
-            c.initCaseInfo();
-            if (c.caseInfoIsNull()) {
-                logger.warn(String.format("Case: %s caseInfo is null", clazz.getName()));
+            if (!c.isValid()) {
+                logger.warn(String.format("Case: %s is not valid.", clazz.getName()));
                 continue;
             }
             needRunCases.add(c);

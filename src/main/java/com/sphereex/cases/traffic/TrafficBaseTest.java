@@ -1,10 +1,14 @@
 package com.sphereex.cases.traffic;
 
 import com.sphereex.cases.ShardingJdbcBaseTest;
+import com.sphereex.core.DBType;
+import lombok.Getter;
 
 public abstract class TrafficBaseTest extends ShardingJdbcBaseTest {
     
-    public TrafficBaseTest() throws Exception {
-        super("/traffic/config-sharding.yaml");
-    }
+    @Getter
+    private final DBType dbType = DBType.MYSQL;
+    
+    @Getter
+    private final String yamlFile = "/traffic/config-sharding.yaml";
 }

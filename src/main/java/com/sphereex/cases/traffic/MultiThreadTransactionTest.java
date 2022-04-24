@@ -2,6 +2,7 @@ package com.sphereex.cases.traffic;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
+import com.sphereex.core.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,18 +24,19 @@ public final class MultiThreadTransactionTest extends TrafficBaseTest {
     
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
     
-    public MultiThreadTransactionTest() throws Exception {
-        super();
-    }
-    
     
     @Override
-    public void pre() throws Exception {
-    
+    public Status run() {
+        try {
+            innerRun();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
     }
     
-    @Override
-    public boolean run() throws Exception {
+    private void innerRun() throws Exception {
         for (int i = 0; i < 10; i++) {
             Connection connection = getAutoDataSource().getConnection();
             connection.setAutoCommit(false);
@@ -50,22 +52,26 @@ public final class MultiThreadTransactionTest extends TrafficBaseTest {
                 each.get();
             } catch (InterruptedException | ExecutionException e) {
                 logger.error("execute error", e);
-                return false;
+                throw e;
             }
         }
-        return true;
     }
     
     @Override
-    public void end() throws Exception {
-        for (Connection each : connections) {
-            each.close();
+    public Status end() {
+        try {
+            for (Connection each : connections) {
+                each.close();
+            }
+        } catch (SQLException e) {
+            return new Status(false, e.getMessage());
         }
         executorService.shutdown();
+        return new Status(true, "");
     }
     
     @Override
-    public void initCaseInfo() {
+    public void initCase() {
         String name = "MultiThreadTransactionTest";
         String feature = "traffic-transaction";
         String tag = "conf/Traffic";

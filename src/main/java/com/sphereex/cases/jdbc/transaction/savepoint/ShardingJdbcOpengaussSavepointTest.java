@@ -3,16 +3,19 @@ package com.sphereex.cases.jdbc.transaction.savepoint;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBType;
+import lombok.Getter;
 
 @AutoTest
 public final class ShardingJdbcOpengaussSavepointTest extends ShardingJdbcSavepointTest {
     
-    public ShardingJdbcOpengaussSavepointTest() throws Exception {
-        super(DBType.OPENGAUSS);
-    }
+    @Getter
+    private final DBType dbType = DBType.OPENGAUSS;
+    
+    @Getter
+    private final String yamlFile = null;
     
     @Override
-    public void initCaseInfo() {
+    public void initCase() {
         String name = "ShardingJdbcOpengaussSavepointTest";
         String feature = "jdbc-transaction";
         String tag = "savepoint";

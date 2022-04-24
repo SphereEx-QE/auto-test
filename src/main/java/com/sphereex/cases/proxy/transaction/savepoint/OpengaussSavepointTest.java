@@ -4,113 +4,107 @@ import com.sphereex.cases.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.core.DBType;
+import com.sphereex.core.Status;
+import lombok.Getter;
 import org.opengauss.jdbc.PSQLSavepoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
 @AutoTest
 public final class OpengaussSavepointTest extends ProxyBaseTest {
     
+    @Getter
+    private final DBType dbType = DBType.OPENGAUSS;
+    
     private static final Logger logger = LoggerFactory.getLogger(OpengaussSavepointTest.class);
     
-    public OpengaussSavepointTest() {
-        super(DBType.OPENGAUSS);
-    }
-    
     @Override
-    public void pre() throws Exception {
-        Connection conn = getAutodataSource().getConnection();
-        Statement stmt;
-        Statement stmt1;
-        stmt = conn.createStatement();
-        stmt.executeUpdate("drop table if exists account;");
-        stmt.close();
-        stmt1 = conn.createStatement();
-        stmt1.executeUpdate("create table account(id int, balance float ,transaction_id int);");
-        stmt1.close();
-        conn.close();
-    }
-    
-    @Override
-    public boolean run() throws Exception {
-        boolean r1 = case1();
-        boolean r2 = case2();
-        boolean r3 = case3();
-        if (!r1 || !r2 || !r3) {
-            return false;
+    public Status pre() {
+        Status s = super.pre();
+        if (!s.isSuccess()) {
+            return s;
         }
-        return true;
+        try {
+            Connection conn = getAutoDataSource().getConnection();
+            Statement stmt;
+            Statement stmt1;
+            stmt = conn.createStatement();
+            stmt.executeUpdate("drop table if exists account;");
+            stmt1 = conn.createStatement();
+            stmt1.executeUpdate("create table account(id int, balance float ,transaction_id int);");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
     }
     
     @Override
-    public void end() throws Exception {
+    public Status run() {
+        try {
+            case1();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+    
+        try {
+            case2();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+    
+        try {
+            case3();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Status(false, e.getMessage());
+        }
+        return new Status(true, "");
     }
     
-    private boolean case1 () throws Exception {
-        Connection conn = getAutodataSource().getConnection();
+    private void case1 () throws Exception {
+        Connection conn = getAutoDataSource().getConnection();
         conn.setAutoCommit(false);
         checkRowCount(conn, 0);
-        if (!checkRowCount(conn, 0)) {
-            return false;
-        }
         Statement statement1 = conn.createStatement();
         statement1.execute("insert into account(id, balance, transaction_id) values(1,1,1);");
         Savepoint point1 = conn.setSavepoint("point1");
-        if (!checkRowCount(conn, 1)) {
-            return false;
-        }
+        checkRowCount(conn, 1);
         Statement statement2 = conn.createStatement();
         statement2.execute("insert into account(id, balance, transaction_id) values(2,2,2);");
-        if (!checkRowCount(conn, 2)) {
-            return false;
-        }
+        checkRowCount(conn, 2);
         conn.rollback(point1);
-        if (!checkRowCount(conn, 1)) {
-            return false;
-        }
+        checkRowCount(conn, 1);
         conn.commit();
-        if (!checkRowCount(conn, 1)) {
-            return false;
-        }
-        conn.close();
-        return true;
+        checkRowCount(conn, 1);
     }
     
-    private boolean case2() throws Exception{
-        Connection conn = getAutodataSource().getConnection();
+    private void case2() throws Exception{
+        Connection conn = getAutoDataSource().getConnection();
         conn.setAutoCommit(false);
-        if (!checkRowCount(conn, 1)) {
-            return false;
-        }
+        checkRowCount(conn, 1);
         Statement statement1 = conn.createStatement();
         statement1.execute("insert into account(id, balance, transaction_id) values(2,2,2);");
         Savepoint point2 = conn.setSavepoint("point2");
-        if (!checkRowCount(conn, 2)) {
-            return false;
-        }
+        checkRowCount(conn, 2);
         Statement statement2 = conn.createStatement();
         statement2.execute("insert into account(id, balance, transaction_id) values(3,3,3);");
-        if (!checkRowCount(conn, 3)) {
-            return false;
-        }
+        checkRowCount(conn, 3);
         conn.releaseSavepoint(point2);
-        if (!checkRowCount(conn, 3)) {
-            return false;
-        }
+        checkRowCount(conn, 3);
         conn.commit();
-        if (!checkRowCount(conn, 3)) {
-            return false;
-        }
-        conn.close();
-        return true;
+        checkRowCount(conn, 3);
     }
     
-    private boolean checkRowCount(Connection conn, int rowNum) throws Exception {
+    private void checkRowCount(Connection conn, int rowNum) throws Exception {
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery("select * from account;");
         int rn = 0;
@@ -120,51 +114,48 @@ public final class OpengaussSavepointTest extends ProxyBaseTest {
         statement.close();
         if (rn != rowNum) {
             logger.error("recode num assert error, expect:{}, actual:{}.", rowNum, rn);
-            return false;
+            throw new Exception(String.format("recode num assert error, expect:{}, actual:{}.", rowNum, rn));
         }
-        return true;
     }
     
-    private boolean case3() throws Exception{
-        Connection conn = getAutodataSource().getConnection();
+    private void case3() throws Exception{
+        Connection conn = getAutoDataSource().getConnection();
         try {
             conn.setSavepoint("point");
             logger.error("expect exception, but no exception report");
-            return false;
+            throw new Exception("expect exception, but no exception report");
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             if (!"Cannot establish a savepoint in auto-commit mode.".equals(ex.getMessage())) {
                 logger.error("expect exception message error");
-                return false;
+                throw new Exception("expect exception message error");
             }
         }
         try {
             conn.rollback(new PSQLSavepoint("point1"));
             logger.error("expect exception, but no exception report");
-            return false;
+            throw new Exception("expect exception, but no exception report");
         } catch (Exception ex) {
             if (!ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks")) {
                 logger.error("expect exception message error");
-                return false;
+                throw new Exception("expect exception message error");
             }
         }
 
         try {
             conn.releaseSavepoint(new PSQLSavepoint("point1"));
             logger.error("expect exception, but no exception report");
-            return false;
+            throw new Exception("expect exception, but no exception report");
         } catch (Exception ex) {
             if (!ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks")) {
                 logger.error("expect exception message error");
-                return false;
+                throw new Exception("expect exception message error");
             }
         }
-        conn.close();
-        return true;
     }
     
     @Override
-    public void initCaseInfo() {
+    public void initCase() {
         String name = "OpengaussSavepointTest";
         String feature = "proxy-transaction";
         String tag = "savepoint";
@@ -184,5 +175,6 @@ public final class OpengaussSavepointTest extends ProxyBaseTest {
                 "13. test for release savepoint";
         CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
         setCaseInfo(caseInfo);
+        super.initCase();
     }
 }
