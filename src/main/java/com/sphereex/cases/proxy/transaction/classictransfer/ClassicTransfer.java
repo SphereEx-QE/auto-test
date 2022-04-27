@@ -1,9 +1,9 @@
 package com.sphereex.cases.proxy.transaction.classictransfer;
 
-import com.sphereex.cases.ProxyBaseTest;
+import com.sphereex.cases.base.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBType;
 import com.sphereex.core.Status;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -79,16 +79,14 @@ public final class ClassicTransfer extends ProxyBaseTest {
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "ClassicTransfer";
         String feature = "proxy-transaction";
         String tag = "OpenGauss";
         String message = "this is a test for classic transfer" +
                 "1. 20 treads execute transfer operations concurrently" +
                 "2. Randomly query the sum of balance to verify whether the data is consistent";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
-        super.initCase();
+        return new CaseInfo(name, feature, tag, message);
     }
     
     int getBalanceSum() throws Exception{

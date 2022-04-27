@@ -1,9 +1,6 @@
-package com.sphereex.cases;
+package com.sphereex.cases.base;
 
-import com.sphereex.core.DBType;
 import com.sphereex.core.Status;
-import com.sphereex.utils.AutoDataSource;
-import com.sphereex.utils.JdbcDataSource;
 import lombok.Getter;
 
 public abstract class ShardingJdbcBaseTest extends BaseCaseImpl {

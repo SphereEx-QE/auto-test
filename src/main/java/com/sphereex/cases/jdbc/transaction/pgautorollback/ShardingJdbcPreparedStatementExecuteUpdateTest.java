@@ -1,9 +1,9 @@
 package com.sphereex.cases.jdbc.transaction.pgautorollback;
 
-import com.sphereex.cases.ShardingJdbcBaseTest;
+import com.sphereex.cases.base.ShardingJdbcBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBType;
 import com.sphereex.core.Status;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -98,12 +98,11 @@ public final class ShardingJdbcPreparedStatementExecuteUpdateTest extends Shardi
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "ShardingJdbcPreparedStatementExecuteUpdateTest";
         String feature = "jdbc-transaction";
         String tag = "pg-og-auto-rollback";
         String message = "";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
+        return new CaseInfo(name, feature, tag, message);
     }
 }

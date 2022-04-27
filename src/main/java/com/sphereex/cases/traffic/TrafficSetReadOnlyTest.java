@@ -149,7 +149,7 @@ public final class TrafficSetReadOnlyTest extends TrafficBaseTest {
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "TrafficSetReadOnlyTest";
         String feature = "traffic-transaction";
         String tag = "opengauss";
@@ -157,7 +157,6 @@ public final class TrafficSetReadOnlyTest extends TrafficBaseTest {
                 "1. one DB have only one connection" +
                 "2. session A run 'set session transaction read only', close session A" +
                 "3. session B run 'update' successful";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
+        return new CaseInfo(name, feature, tag, message);
     }
 }

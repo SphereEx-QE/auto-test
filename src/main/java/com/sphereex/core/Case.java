@@ -7,11 +7,9 @@ public interface Case {
 
     Status end();
 
-    Status start();
+    CaseInfo init();
     
-    void initCase();
-    
-    boolean isValid();
-
     CaseInfo getCaseInfo();
+    
+    void setCaseInfo(CaseInfo caseInfo);
 }

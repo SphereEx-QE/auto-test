@@ -1,9 +1,9 @@
 package com.sphereex.cases.proxy.transaction.savepoint;
 
-import com.sphereex.cases.ProxyBaseTest;
+import com.sphereex.cases.base.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBType;
 import com.sphereex.core.Status;
 import lombok.Getter;
 import org.opengauss.jdbc.PSQLSavepoint;
@@ -155,7 +155,7 @@ public final class OpengaussSavepointTest extends ProxyBaseTest {
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "OpengaussSavepointTest";
         String feature = "proxy-transaction";
         String tag = "savepoint";
@@ -173,8 +173,6 @@ public final class OpengaussSavepointTest extends ProxyBaseTest {
                 "11. commit the transaction" +
                 "12. check if row count is 1" +
                 "13. test for release savepoint";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
-        super.initCase();
+        return new CaseInfo(name, feature, tag, message);
     }
 }

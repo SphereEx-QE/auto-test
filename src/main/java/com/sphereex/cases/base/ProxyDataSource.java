@@ -1,7 +1,8 @@
-package com.sphereex.utils;
+package com.sphereex.cases.base;
 
-import com.sphereex.core.DBInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.utils.MySQLUtil;
+import com.sphereex.utils.OpenGaussUtil;
+import com.sphereex.utils.PostgreSQLUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,10 +35,13 @@ public final class ProxyDataSource extends AutoDataSource {
             switch (dbType) {
                 case MYSQL:
                     connection = MySQLUtil.getInstance().getConnection(dbInfo);
+                    break;
                 case OPENGAUSS:
                     connection = OpenGaussUtil.getInstance().getConnnection(dbInfo);
+                    break;
                 case POSTGRESQL:
                     connection = PostgreSQLUtil.getInstance().getConnnection(dbInfo);
+                    break;
             }
         } catch (ClassNotFoundException e) {
             throw new SQLException("DB driver class not found.");

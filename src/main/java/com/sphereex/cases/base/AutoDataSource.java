@@ -1,4 +1,4 @@
-package com.sphereex.utils;
+package com.sphereex.cases.base;
 
 import lombok.Getter;
 

@@ -2,6 +2,7 @@ package com.sphereex;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.Case;
+import com.sphereex.core.CaseInfo;
 import com.sphereex.core.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public final class Bootstrap {
         for (Case c : needRunCases) {
             Status status = null;
             try {
-                status = c.start();
+                status = startCase(c);
             } catch (Exception e) {
                 logger.info(String.format("case %s throw exception", c.getCaseInfo().getName()));
                 e.printStackTrace();
@@ -70,9 +71,28 @@ public final class Bootstrap {
                 successNum += 1;
             } else {
                 failedNum += 1;
-                System.out.printf("case: %s, status: %b%n", c.getCaseInfo().getName(), "failed");
+                System.out.printf("case: %s, status: %b%n", c.getCaseInfo().getName(), false);
             }
         }
+    }
+    
+    static Status startCase(Case c) {
+        Status preStatus = c.pre();
+        if (!preStatus.isSuccess()) {
+            return preStatus;
+        }
+        Status runStatus = c.run();
+    
+        if (!runStatus.isSuccess()) {
+            return runStatus;
+        }
+    
+        Status endStatus = c.end();
+    
+        if (!endStatus.isSuccess()) {
+            return endStatus;
+        }
+        return new Status(true, "");
     }
 
     public static void filterFiles() throws ClassNotFoundException {
@@ -102,7 +122,8 @@ public final class Bootstrap {
     public static void selectRunCases() throws Exception {
         for (Class clazz : cases) {
             Case c = (Case) clazz.newInstance();
-            c.initCase();
+            CaseInfo caseInfo = c.init();
+            c.setCaseInfo(caseInfo);
             if (!features.isEmpty() && !features.contains(c.getCaseInfo().getFeature())) {
                 continue;
             }
@@ -112,12 +133,16 @@ public final class Bootstrap {
             if (!needRunCaseNames.isEmpty() && !needRunCaseNames.contains(c.getCaseInfo().getName())) {
                 continue;
             }
-            if (!c.isValid()) {
+            if (!checkValid(c)) {
                 logger.warn(String.format("Case: %s is not valid.", clazz.getName()));
                 continue;
             }
             needRunCases.add(c);
         }
+    }
+    
+    static boolean checkValid(Case c) {
+        return null != c.getCaseInfo();
     }
 
     public static void caseScanner() throws IOException, ClassNotFoundException {

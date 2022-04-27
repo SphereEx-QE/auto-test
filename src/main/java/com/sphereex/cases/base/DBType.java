@@ -1,4 +1,4 @@
-package com.sphereex.core;
+package com.sphereex.cases.base;
 
 public enum DBType {
     MYSQL,
