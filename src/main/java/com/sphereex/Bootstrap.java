@@ -62,7 +62,6 @@ public final class Bootstrap {
         for (Case c : needRunCases) {
             Status status = null;
             try {
-//                status = c.start();
                 status = startCase(c);
             } catch (Exception e) {
                 logger.info(String.format("case %s throw exception", c.getCaseInfo().getName()));
@@ -123,7 +122,6 @@ public final class Bootstrap {
     public static void selectRunCases() throws Exception {
         for (Class clazz : cases) {
             Case c = (Case) clazz.newInstance();
-//            c.initCase();
             CaseInfo caseInfo = c.init();
             c.setCaseInfo(caseInfo);
             if (!features.isEmpty() && !features.contains(c.getCaseInfo().getFeature())) {
@@ -135,7 +133,6 @@ public final class Bootstrap {
             if (!needRunCaseNames.isEmpty() && !needRunCaseNames.contains(c.getCaseInfo().getName())) {
                 continue;
             }
-//            if (!c.isValid()) {
             if (!checkValid(c)) {
                 logger.warn(String.format("Case: %s is not valid.", clazz.getName()));
                 continue;
