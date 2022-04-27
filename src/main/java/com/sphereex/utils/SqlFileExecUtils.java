@@ -1,7 +1,7 @@
 package com.sphereex.utils;
 
-import com.sphereex.core.DBInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBInfo;
+import com.sphereex.cases.base.DBType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

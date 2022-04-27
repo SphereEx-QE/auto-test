@@ -1,9 +1,9 @@
 package com.sphereex.cases.proxy.transaction.autocommit;
 
-import com.sphereex.cases.ProxyBaseTest;
+import com.sphereex.cases.base.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBType;
 import com.sphereex.core.Status;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -35,7 +35,9 @@ public final class AutoCommit extends ProxyBaseTest {
         try {
             conn1 = getAutoDataSource().getConnection();
             conn2 = getAutoDataSource().getConnection();
+            conn1.createStatement().execute("delete from account;");
         } catch (SQLException e) {
+            e.printStackTrace();
             return new Status(false, e.getMessage());
         }
         return new Status(true,"");
@@ -47,7 +49,9 @@ public final class AutoCommit extends ProxyBaseTest {
             innerRun();
         } catch (SQLException e) {
             e.printStackTrace();
-            return new Status(true, e.getMessage());
+            if ("there should be result." != e.getMessage()) {
+                return new Status(false, e.getMessage());
+            }
         }
         return new Status(true, "");
     }
@@ -63,7 +67,7 @@ public final class AutoCommit extends ProxyBaseTest {
     
         conn2.createStatement().execute("begin;");
     
-        conn1.createStatement().execute("insert into account values(1,'lu',100)");
+        conn1.createStatement().execute("insert into account values(1,100,1)");
     
         ResultSet result1 = conn2.createStatement().executeQuery("select * from account;");
     
@@ -94,15 +98,13 @@ public final class AutoCommit extends ProxyBaseTest {
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "AutoCommit";
         String feature = "proxy-transaction";
         String tag = "MySQL";
         String message = "this is a test for mysql store" +
                 "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
                 "2. session A run commit, then session B can see the insert data";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
-        super.initCase();
+        return new CaseInfo(name, feature, tag, message);
     }
 }

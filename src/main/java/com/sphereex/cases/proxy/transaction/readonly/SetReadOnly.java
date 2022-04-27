@@ -1,9 +1,9 @@
 package com.sphereex.cases.proxy.transaction.readonly;
 
-import com.sphereex.cases.ProxyBaseTest;
+import com.sphereex.cases.base.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBType;
 import com.sphereex.core.Status;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -132,7 +132,7 @@ public final class SetReadOnly extends ProxyBaseTest {
     }
 
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "SetReadOnly";
         String feature = "proxy-transaction";
         String tag = "MySQL";
@@ -140,9 +140,7 @@ public final class SetReadOnly extends ProxyBaseTest {
                 "1. one DB have only one connection" +
                 "2. session A run 'set session transaction read only', close session A" +
                 "3. session B run 'update' successful";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
-        super.initCase();
+        return new CaseInfo(name, feature, tag, message);
     }
 }
 

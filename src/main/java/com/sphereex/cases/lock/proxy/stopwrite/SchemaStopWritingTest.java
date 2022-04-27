@@ -17,10 +17,10 @@
 
 package com.sphereex.cases.lock.proxy.stopwrite;
 
-import com.sphereex.cases.BaseCaseImpl;
+import com.sphereex.cases.base.BaseCaseImpl;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBInfo;
+import com.sphereex.cases.base.DBInfo;
 import com.sphereex.core.Status;
 import com.sphereex.utils.MySQLUtil;
 import org.slf4j.Logger;
@@ -190,12 +190,11 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
     }
 
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "stop-writing-for-schema";
         String feature = "proxy-lock";
         String tag = "MySQL";
         String message = "stop-writing-for-schema";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
+        return new CaseInfo(name, feature, tag, message);
     }
 }

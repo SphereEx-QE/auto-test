@@ -1,6 +1,6 @@
 package com.sphereex.utils;
 
-import com.sphereex.core.DBInfo;
+import com.sphereex.cases.base.DBInfo;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,8 +1,9 @@
 package com.sphereex.cases;
 
+import com.sphereex.cases.base.ProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBType;
 import com.sphereex.core.Status;
 import com.sphereex.utils.SqlFileExecUtils;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.Getter;
 import java.sql.SQLException;
 
 @AutoTest
-public final class Example extends ProxyBaseTest{
+public final class Example extends ProxyBaseTest {
     
     @Getter
     private final DBType dbType = DBType.MYSQL;
@@ -22,7 +23,7 @@ public final class Example extends ProxyBaseTest{
             return s;
         }
         try {
-            SqlFileExecUtils.executeSqlFile(Example.class.getResource("/example.sql").getFile(), getDbInfo(), dbType);
+            SqlFileExecUtils.executeSqlFile(Example.class.getResource("/sql/example.sql").getFile(), getDbInfo(), dbType);
         } catch (SQLException e) {
             e.printStackTrace();
             return new Status(false, e.getMessage());
@@ -36,13 +37,11 @@ public final class Example extends ProxyBaseTest{
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "Example";
         String feature = "Example";
         String tag = "Example";
         String message = "Example";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
-        super.initCase();
+        return new CaseInfo(name, feature, tag, message);
     }
 }

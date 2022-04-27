@@ -66,14 +66,13 @@ public final class TrafficSetTransactionIsolationLevelTest extends TrafficBaseTe
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "TrafficSetTransactionIsolationLevelTest";
         String feature = "traffic-transaction";
         String tag = "opengauss";
         String message = "this is a Traffic test for opengauss store" +
                 "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
                 "2. session A run commit, then session B can see the insert data";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
+        return new CaseInfo(name, feature, tag, message);
     }
 }

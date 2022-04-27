@@ -2,7 +2,7 @@ package com.sphereex.cases.jdbc.transaction.savepoint;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.core.DBType;
+import com.sphereex.cases.base.DBType;
 import lombok.Getter;
 
 @AutoTest
@@ -15,7 +15,7 @@ public final class ShardingJdbcPostgresqlSavepointTest extends ShardingJdbcSavep
     private final String yamlFile = null;
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "ShardingJdbcPostgresqlSavepointTest";
         String feature = "jdbc-transaction";
         String tag = "savepoint";
@@ -33,7 +33,6 @@ public final class ShardingJdbcPostgresqlSavepointTest extends ShardingJdbcSavep
                 "11. commit the transaction" +
                 "12. check if row count is 1" +
                 "13. test for release savepoint";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
+        return new CaseInfo(name, feature, tag, message);
     }
 }

@@ -100,14 +100,13 @@ public final class TrafficOpengaussAutocommit extends TrafficBaseTest {
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "TrafficOpengaussAutocommit";
         String feature = "traffic-transaction";
         String tag = "autocommit";
         String message = "this is a traffic test for set transaction" +
                 "1. session A ,run set autocommit=0 and insert ,now session B can not see the insert data" +
                 "2. session A run begin, then session B can see the insert data";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
+        return new CaseInfo(name, feature, tag, message);
     }
 }

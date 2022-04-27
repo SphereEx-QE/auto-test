@@ -71,13 +71,12 @@ public final class MultiThreadTransactionTest extends TrafficBaseTest {
     }
     
     @Override
-    public void initCase() {
+    public CaseInfo init() {
         String name = "MultiThreadTransactionTest";
         String feature = "traffic-transaction";
-        String tag = "conf/Traffic";
+        String tag = "conf/case/Traffic";
         String message = "Connection in transaction should be traffic to proxy.";
-        CaseInfo caseInfo = new CaseInfo(name, feature, tag, message);
-        setCaseInfo(caseInfo);
+        return new CaseInfo(name, feature, tag, message);
     }
     
     private void execute(final Iterator<Connection> iterator) {
