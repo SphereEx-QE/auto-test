@@ -2,7 +2,6 @@ package com.sphereex;
 
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.Case;
-import com.sphereex.core.CaseInfo;
 import com.sphereex.core.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,8 +121,7 @@ public final class Bootstrap {
     public static void selectRunCases() throws Exception {
         for (Class clazz : cases) {
             Case c = (Case) clazz.newInstance();
-            CaseInfo caseInfo = c.init();
-            c.setCaseInfo(caseInfo);
+            c.init();
             if (!features.isEmpty() && !features.contains(c.getCaseInfo().getFeature())) {
                 continue;
             }
