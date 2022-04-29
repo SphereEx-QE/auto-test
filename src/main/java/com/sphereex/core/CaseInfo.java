@@ -2,7 +2,6 @@ package com.sphereex.core;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 // Case meta data
 @Getter
