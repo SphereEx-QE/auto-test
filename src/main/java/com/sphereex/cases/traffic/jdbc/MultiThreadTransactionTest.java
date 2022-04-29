@@ -17,9 +17,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 @AutoTest
-public final class MultiThreadTransactionTestSphere extends TrafficBaseTest {
+public final class MultiThreadTransactionTest extends TrafficBaseTest {
     
-    private final Logger logger = LoggerFactory.getLogger(MultiThreadTransactionTestSphere.class);
+    private final Logger logger = LoggerFactory.getLogger(MultiThreadTransactionTest.class);
     
     private final List<Connection> connections = new LinkedList<>();
     
