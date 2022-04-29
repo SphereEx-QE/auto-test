@@ -47,32 +47,35 @@ public final class JdbcDataSource extends AutoDataSource {
     
     
     private void createMysqlDatasource() throws Exception{
+        String filePath = "/conf/default/jdbc/mysql/config-sharding.yaml";
         try {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/conf/default/jdbc/JdbcMysqlBase/config-sharding.yaml").getFile()));
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource(filePath).getFile()));
         } catch (Exception exception) {
             exception.printStackTrace();
-            logger.error("read /conf/JdbcMysqlBase/config-sharding.yaml failed.");
-            throw new Exception("read /conf/JdbcMysqlBase/config-sharding.yaml failed.");
+            logger.error("read {} failed.", filePath);
+            throw new Exception(String.format("read %s failed.", filePath));
         }
     }
     
     private void createOpengaussDatasource() throws Exception{
+        String filePath = "/conf/default/jdbc/opengauss/config-sharding.yaml";
         try {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/conf/default/jdbc/JdbcOpengaussBase/config-sharding.yaml").getFile()));
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource(filePath).getFile()));
         } catch (Exception exception) {
             exception.printStackTrace();
-            logger.error("read /conf/JdbcOpengaussBase/config-sharding.yaml failed.");
-            throw new Exception("read /conf/JdbcOpengaussBase/config-sharding.yaml failed.");
+            logger.error("read {} failed.", filePath);
+            throw new Exception(String.format("read %s failed.", filePath));
         }
     }
     
     private void createPostgresqlDatasource() throws Exception{
+        String filePath = "/conf/default/jdbc/postgresql/config-sharding.yaml";
         try {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource("/conf/default/jdbc/JdbcPostgresqlBase/config-sharding.yaml").getFile()));
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(this.getClass().getResource(filePath).getFile()));
         } catch (Exception exception) {
             exception.printStackTrace();
-            logger.error("read /conf/JdbcPostgresqlBase/config-sharding.yaml failed.");
-            throw new Exception("read /conf/JdbcPostgresqlBase/config-sharding.yaml failed.");
+            logger.error("read {} failed.", filePath);
+            throw new Exception(String.format("read %s failed.", filePath));
         }
     }
     
