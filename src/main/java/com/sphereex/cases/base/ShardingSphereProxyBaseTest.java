@@ -2,7 +2,6 @@ package com.sphereex.cases.base;
 
 import com.sphereex.cases.base.item.AutoDataSource;
 import com.sphereex.cases.base.item.DBInfo;
-import com.sphereex.cases.base.item.DBType;
 import com.sphereex.cases.base.item.ProxyDataSource;
 import com.sphereex.core.Status;
 import lombok.Getter;
@@ -13,8 +12,6 @@ public abstract class ShardingSphereProxyBaseTest extends BaseCaseImpl {
     private AutoDataSource autoDataSource;
     
     private DBInfo dbInfo;
-    
-    protected abstract DBType getDbType();
     
     public ShardingSphereProxyBaseTest() {
         String ip = System.getProperty("ip");
@@ -29,7 +26,7 @@ public abstract class ShardingSphereProxyBaseTest extends BaseCaseImpl {
     
     @Override
     public Status pre(){
-        autoDataSource = new ProxyDataSource(getDbInfo(), getDbType());
+        autoDataSource = new ProxyDataSource(getDbInfo(), getCaseInfo().getDbType());
         return new Status(true, "");
     }
     

@@ -18,9 +18,9 @@
 package com.sphereex.cases.lock.proxy;
 
 import com.sphereex.cases.base.BaseCaseImpl;
-import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
 import com.sphereex.cases.base.item.DBInfo;
+import com.sphereex.core.DBType;
 import com.sphereex.core.Status;
 import com.sphereex.utils.MySQLUtil;
 import org.slf4j.Logger;
@@ -34,24 +34,20 @@ import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@AutoTest
 public class SchemaStopWritingTest extends BaseCaseImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(SchemaStopWritingTest.class);
 
     private static final Map<String, Connection> CONNECTIONS = new LinkedHashMap<>();
 
-    static {
+    @Override
+    public Status pre() {
         try {
             CONNECTIONS.put("13306", MySQLUtil.getInstance().getConnection(new DBInfo("127.0.0.1", 13306, "root", "root", "")));
             CONNECTIONS.put("3307", MySQLUtil.getInstance().getConnection(new DBInfo("127.0.0.1", 3307, "root", "root", "scaling_db")));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public Status pre() {
         try {
             sourcePreProxy(CONNECTIONS.get("3307"));
             targetPreMySQL(CONNECTIONS.get("13306"));
@@ -61,7 +57,7 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
             return new Status(false, e.getMessage());
         }
         return new Status(true, "");
-        
+
     }
 
     private void sourcePreProxy(final Connection connection) throws SQLException {
@@ -186,18 +182,20 @@ public class SchemaStopWritingTest extends BaseCaseImpl {
             return new Status(false, e.getMessage());
         }
         return new Status(true, "");
-        
+
     }
 
     @Override
     public void init() {
         String name = "stop-writing-for-schema";
-        String feature = "proxy-lock";
+        String feature = "lock";
         String tag = "MySQL";
         String message = "stop-writing-for-schema";
-        caseInfo = new CaseInfo(name, feature, tag, message);
+        String configPath = "conf/case/lock/proxy/";
+        String clientType = "proxy";
+        caseInfo = new CaseInfo(name, feature, tag, message, DBType.MYSQL, clientType, configPath);
     }
-    
+
     @Override
     public CaseInfo getCaseInfo() {
         if (null == caseInfo) {

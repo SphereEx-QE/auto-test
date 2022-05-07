@@ -1,14 +1,11 @@
 package com.sphereex.cases.base;
 
 import com.sphereex.cases.base.item.AutoDataSource;
-import com.sphereex.cases.base.item.DBType;
 import com.sphereex.cases.base.item.JdbcDataSource;
 import com.sphereex.core.Status;
 import lombok.Getter;
 
 public abstract class ShardingSphereJdbcBaseTest extends BaseCaseImpl {
-    
-    protected abstract DBType getDbType();
     
     protected abstract String getYamlFile();
     
@@ -20,8 +17,10 @@ public abstract class ShardingSphereJdbcBaseTest extends BaseCaseImpl {
         try {
             if (null != getYamlFile()) {
                 autoDataSource = new JdbcDataSource(getYamlFile());
-            } else if (null != getDbType()) {
-                autoDataSource = new JdbcDataSource(getDbType());
+//            } else if (null != getDbType()) {
+            } else if (null != getCaseInfo().getDbType()) {
+//                autoDataSource = new JdbcDataSource(getDbType());
+                autoDataSource = new JdbcDataSource(getCaseInfo().getDbType());
             }
         } catch (Exception e) {
             e.printStackTrace();

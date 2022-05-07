@@ -3,7 +3,7 @@ package com.sphereex.cases;
 import com.sphereex.cases.base.ShardingSphereProxyBaseTest;
 import com.sphereex.core.AutoTest;
 import com.sphereex.core.CaseInfo;
-import com.sphereex.cases.base.item.DBType;
+import com.sphereex.core.DBType;
 import com.sphereex.core.Status;
 import com.sphereex.utils.SqlFileExecUtils;
 import lombok.Getter;
@@ -42,7 +42,9 @@ public final class Example extends ShardingSphereProxyBaseTest {
         String feature = "Example";
         String tag = "Example";
         String message = "Example";
-        caseInfo = new CaseInfo(name, feature, tag, message);
+        String configPath = "";
+        String clientType = "Example";
+        caseInfo = new CaseInfo(name, feature, tag, message, DBType.MYSQL, clientType, configPath);
     }
     
     @Override
