@@ -1,5 +1,6 @@
 package com.sphereex.cases.base.item;
 
+import com.sphereex.core.DBType;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public final class JdbcDataSource extends AutoDataSource {
         } catch (Exception exception) {
             exception.printStackTrace();
             logger.error("read {} failed.", yamlFile);
-            throw new Exception(String.format("read {} failed.", yamlFile));
+            throw new Exception(String.format("read %s failed.", yamlFile));
         }
     }
     

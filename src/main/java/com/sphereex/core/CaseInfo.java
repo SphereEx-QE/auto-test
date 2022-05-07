@@ -3,19 +3,21 @@ package com.sphereex.core;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-// Case meta data
 @Getter
 @RequiredArgsConstructor
 public final class CaseInfo {
 
     private final String name;
 
-//    feature which case belong to
     private final String feature;
 
-//    case tag
     private final String tag;
 
-//    describe of case
     private final String message;
+    
+    private final DBType dbType;
+    
+    private final String clientType;
+    
+    private final String configPath;
 }

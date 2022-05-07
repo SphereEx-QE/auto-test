@@ -1,6 +1,7 @@
 package com.sphereex.cases.transaction.jdbc.savepoint;
 
 import com.sphereex.cases.base.ShardingSphereJdbcBaseTest;
+import com.sphereex.core.CaseInfo;
 import com.sphereex.core.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,14 @@ public abstract class ShardingJdbcSavepointTest extends ShardingSphereJdbcBaseTe
             return new Status(false, e.getMessage());
         }
         return new Status(true, "");
+    }
+    
+    @Override
+    public CaseInfo getCaseInfo() {
+        if (null == caseInfo) {
+            init();
+        }
+        return caseInfo;
     }
     
     private void case1() throws Exception{

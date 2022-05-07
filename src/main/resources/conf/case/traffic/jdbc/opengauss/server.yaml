@@ -1,0 +1,105 @@
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: governance_ds
+      server-lists: localhost:2181
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: true
+
+rules:
+  - !AUTHORITY
+    users:
+      - root@%:root
+      - sharding@:sharding
+    provider:
+      type: ALL_PRIVILEGES_PERMITTED
+  - !SQL_PARSER
+    sqlCommentParseEnabled: true
+    sqlStatementCache:
+      initialCapacity: 2000
+      maximumSize: 65535
+      concurrencyLevel: 4
+    parseTreeCache:
+      initialCapacity: 128
+      maximumSize: 1024
+      concurrencyLevel: 4
+  - !TRAFFIC
+    trafficStrategies:
+      sql_match_traffic:
+        labels:
+          - OLTP
+        algorithmName: sql_match_algorithm
+        loadBalancerName: random_load_balancer
+      sql_regex_traffic:
+        labels:
+          - OLTP
+        algorithmName: sql_regex_algorithm
+        loadBalancerName: random_load_balancer
+      sql_hint_traffic:
+        labels:
+          - OLAP
+        algorithmName: sql_hint_algorithm
+        loadBalancerName: round_robin_load_balancer
+      transaction_traffic:
+        # 可选配置，算法为 JDBC 和 FIRST_SQL 无需配置
+        labels:
+          - OLAP
+          - OLTP
+        algorithmName: transaction_algorithm
+        # 可选配置，算法为 JDBC 和 FIRST_SQL 无需配置
+        loadBalancerName: round_robin_load_balancer
+    trafficAlgorithms:
+      sql_match_algorithm:
+        type: SQL_MATCH
+        props:
+          sql: SELECT * FROM t_order WHERE content IN (?, ?); UPDATE t_order SET creation_date = NOW() WHERE user_id = 1;
+      sql_regex_algorithm:
+        type: SQL_REGEX
+        props:
+          regex: (?i)^(UPDATE|SELECT).*WHERE user_id.*
+      sql_hint_algorithm:
+        type: SQL_HINT
+        props:
+          use_traffic: true
+      transaction_algorithm:
+        # 支持 FIRST_SQL、JDBC、PROXY 三种类型
+        # FIRST_SQL 会根据第一条 SQL 转发的结果来决定事务单元的转发结果
+        # JDBC 会将事务单元不进行转发，在 JDBC 上进行执行
+        # PROXY 会将事务单元转发到 Proxy 实例执行，为了保证数据的一致性，事务单元会在同一个实例上执行
+        type: PROXY
+    loadBalancers:
+      random_load_balancer:
+        type: RANDOM
+      round_robin_load_balancer:
+        type: ROUND_ROBIN
+
+# 该配置是实例级别的, 机器 2 3308 OLTP , 机器 3 3309 OLAP
+labels:
+  - OLTP
+
+props:
+  max-connections-size-per-query: 1
+  kernel-executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  proxy-opentracing-enabled: false
+  proxy-hint-enabled: false
+  sql-show: true
+  check-table-metadata-enabled: false
+  show-process-list-enabled: false
+    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
+  # The default value is -1, which means set the minimum value for different JDBC drivers.
+  proxy-backend-query-fetch-size: -1
+  check-duplicate-table-enabled: false
+  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
+    # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
+  # and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.
+  proxy-backend-executor-suitable: OLAP
+  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
+  sql-federation-enabled: false
+  # Available proxy backend driver type: JDBC (default), ExperimentalVertx
+  proxy-backend-driver-type: JDBC

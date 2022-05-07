@@ -1,5 +1,6 @@
 package com.sphereex.cases.base.item;
 
+import com.sphereex.core.DBType;
 import com.sphereex.utils.MySQLUtil;
 import com.sphereex.utils.OpenGaussUtil;
 import com.sphereex.utils.PostgreSQLUtil;

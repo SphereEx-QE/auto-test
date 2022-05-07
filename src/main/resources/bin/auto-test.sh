@@ -1,7 +1,5 @@
 #!/bin/bash
 
-SERVER_NAME=ShardingSphere-Proxy
-
 cd `dirname $0`
 cd ..
 DEPLOY_DIR=`pwd`
@@ -17,7 +15,7 @@ CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${DEPLOY_DIR}/conf/*
 MAIN_CLASS=com.sphereex.Bootstrap
 
 print_usage() {
-    echo "usage: auto-test.sh [-h ip] [-P port] [-d dbname] [-u user] [-p password] [-f feature] [-t tag] [-c casename]"
+    echo "usage: auto-test.sh [-h ip] [-P port] [-d dbname] [-u user] [-p password] [-f feature] [-t tag] [-c casename] [-T type] [-l]"
     echo "  -h|--host  ip: shardingsphere proxy ip"
     echo "  -P|--port: shardingsphere proxy port"
     echo "  -d|--dbname: shardingsphere proxy dbname"
@@ -26,6 +24,9 @@ print_usage() {
     echo "  -f|--feature: run the cases of the the feature"
     echo "  -t|--tag: run the cases of the tag"
     echo "  -c|--casenames: run this cases "
+    echo "  -l|--list: list the cases "
+    echo "  --dbtype: DB type "
+    echo "  --clienttype: client type, eg: proxy|jdbc"
     exit 0
 }
 
@@ -41,7 +42,10 @@ password=""
 feature=""
 tag=""
 casename=""
-GETOPT_ARGS=`getopt -o h::P::d::u::p::f::t::c:: --long host::,port::,db_name::,user::,password::,feature::,tag::,casename:: "$@"`
+list=1
+dbType=""
+clienttype=""
+GETOPT_ARGS=`getopt -o h:P:d:u:p:f:t:c:l --long host:,port:,db_name:,user:,password:,feature:,tag:,casename:,dbtype:,clienttype:,list "$@"`
 while [ -n "$1" ]
 do
         case "$1" in
@@ -53,6 +57,9 @@ do
                 -f|--feature) feature=$2; shift 2;;
                 -t|--tag) tag=$2; shift 2;;
                 -c|--casename) casename=$2; shift 2;;
+                --dbtype) dbType=$2; shift 2;;
+                --clienttype) clienttype=$2; shift 2;;
+                -l|--list) list=0; shift 1;;
                 --) break ;;
                 *) break ;;
         esac
@@ -78,6 +85,17 @@ if [ "$feature" != "" ]; then
 fi
 if [ "$tag" != "" ]; then
     JAVA_OPTS=" ${JAVA_OPTS} -Dtag=${tag}"
+fi
+if [ "$dbType" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -DdbType=${dbType}"
+fi
+if [ "$clienttype" != "" ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -DclientType=${clienttype}"
+fi
+if [ $list -eq 0 ]; then
+    JAVA_OPTS=" ${JAVA_OPTS} -Dlist=${list}"
+    java ${JAVA_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} ${casename}
+    exit 0
 fi
 
 echo " java_option: ${JAVA_OPTS}"
